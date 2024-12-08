@@ -7,7 +7,6 @@ use CashDash\Zaar\Auth\Guard;
 use CashDash\Zaar\Concerns\ShopifyRepositoryInterface;
 use CashDash\Zaar\Concerns\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Concerns\UserRepositoryInterface;
-use CashDash\Zaar\Console\Commands\InstallCommand;
 use CashDash\Zaar\Http\Middleware\AddEmbeddedCspHeaderMiddleware;
 use CashDash\Zaar\Sessions\CustomSessionManager;
 use Illuminate\Auth\RequestGuard;
@@ -19,8 +18,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use function Laravel\Prompts\select;
 
+use function Laravel\Prompts\select;
 
 class ZaarServiceProvider extends PackageServiceProvider
 {
@@ -36,7 +35,7 @@ class ZaarServiceProvider extends PackageServiceProvider
             ])
             ->hasInstallCommand(function (\Spatie\LaravelPackageTools\Commands\InstallCommand $command) {
                 $command
-                    ->startWith(fn() => $this->checkInstallStatus($command))
+                    ->startWith(fn () => $this->checkInstallStatus($command))
                     ->publishConfigFile()
                     ->publishMigrations()
                     ->askToRunMigrations()
@@ -77,7 +76,6 @@ class ZaarServiceProvider extends PackageServiceProvider
             $this->app['router']->prependMiddlewareToGroup('web', AddEmbeddedCspHeaderMiddleware::class);
         });
     }
-
 
     private function bindRepositories(): void
     {
@@ -147,12 +145,9 @@ class ZaarServiceProvider extends PackageServiceProvider
             $command->fail('You are using the cookie session driver, Zaar is incompatible with this driver. Please change your session driver in session.php to any other driver.');
         }
 
-
         $hasExistingShopifyModel = select('Do you have an existing Shopify model?', ['Yes', 'No'], default: 'No') === 'Yes';
         $addAxiosInterceptor = select('Would you like to add an Axios interceptor to automatically send the session token with every request?', ['Yes', 'No'], default: 'Yes') === 'Yes';
         $installZaar = select('Would you like to automatically include the @zaarHead Blade directive?', ['Yes', 'No'], default: 'Yes') === 'Yes';
-
-
 
         if ($hasExistingShopifyModel) {
             $command->error('You have an existing Shopify model, you will need to manually adjust the config and migrations to match your model.');
@@ -171,11 +166,11 @@ class ZaarServiceProvider extends PackageServiceProvider
                 $command->warn('We were unable to detect your app.blade.php file, you may need to manually add the @zaar directive to your blade file.');
             } else {
                 $contents = file_get_contents($blade);
-                if (!str_contains($contents, '@zaar')) {
+                if (! str_contains($contents, '@zaar')) {
                     $contents = str_replace('</head>', "\t@zaar\n\n\t</head>", $contents);
                     file_put_contents($blade, $contents);
                 } else {
-                    $command->comment("@zaarHead directive already installed.");
+                    $command->comment('@zaarHead directive already installed.');
                 }
             }
         }
@@ -211,6 +206,7 @@ CODE;
         } else {
             if (str_contains($contents, 'window.shopify.idToken')) {
                 $command->comment('Axios interceptor already installed.');
+
                 return;
             }
             $command->warn('It seems you already have have an Axios interceptor in your bootstrap.ts/js file, you may need to adjust the code to include the session token.');

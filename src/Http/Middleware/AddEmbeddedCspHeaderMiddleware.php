@@ -15,13 +15,13 @@ class AddEmbeddedCspHeaderMiddleware
         if (Zaar::isEmbedded()) {
             $frameAncestors = 'https://admin.shopify.com';
             if (Zaar::sessionStarted()) {
-                $frameAncestors .= ' https://' . Zaar::session()->shop;
+                $frameAncestors .= ' https://'.Zaar::session()->shop;
             } else {
                 $frameAncestors .= ' *.myshopify.com';
             }
             $response->headers->set('Content-Security-Policy', "frame-ancestors $frameAncestors");
         }
-        
+
         return $response;
     }
 }

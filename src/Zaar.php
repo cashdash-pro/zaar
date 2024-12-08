@@ -81,7 +81,7 @@ class Zaar
             return false;
         }
 
-$token =  DecodeSessionToken::make()->handle($bearer_token);
+        $token = DecodeSessionToken::make()->handle($bearer_token);
         if (! $token) {
             return false;
         }
