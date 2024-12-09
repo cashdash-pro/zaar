@@ -1,10 +1,10 @@
 <?php
 
-namespace CashDash\Zaar\Actions\User;
+namespace CashDash\Zaar\Actions\Creation;
 
 use CashDash\Zaar\Actions\Shopify\ShopifyGetInfo;
 use CashDash\Zaar\Concerns\Actions\AsObject;
-use CashDash\Zaar\Concerns\ShopifyRepositoryInterface;
+use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Dtos\SessionData;
 use CashDash\Zaar\Events\ShopifyCreated;
 use Illuminate\Database\Eloquent\Model;

@@ -14,9 +14,17 @@ return [
 
     'force_embedded_https' => true,
 
+    'auth_url' => '/',
+
     'disabled_csrf_routes' => ['*'],
 
     'default_session_repository' => 'database',
+
+    'default_middleware' => [
+        'web',
+        'auth:shopify',
+        \CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware::class
+    ],
 
     /*
      * Data will be stored and loaded from these repositories.
@@ -36,7 +44,7 @@ return [
 
         'sessions' => [
             'database' => [
-                'type' => CashDash\Zaar\Repositories\Sessions\ShopifySessionRepository::class,
+                'type' => \CashDash\Zaar\Repositories\ShopifySessionRepository::class,
                 'model' => \CashDash\Zaar\Models\ShopifySession::class,
             ],
         ],

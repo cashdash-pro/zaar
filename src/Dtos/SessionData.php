@@ -2,7 +2,6 @@
 
 namespace CashDash\Zaar\Dtos;
 
-use Carbon\CarbonImmutable;
 use CashDash\Zaar\Concerns\Actions\AsFake;
 
 class SessionData
@@ -12,44 +11,24 @@ class SessionData
     public function __construct(
         public string $id,
         public string $shop,
-        public string $state,
         public bool $is_online,
-        public ?string $scope,
-        public ?CarbonImmutable $expires_at,
+        public string $scope,
         #[\SensitiveParameter]
-        public ?string $access_token,
-
-        public int $user_id,
-        public string $first_name,
-        public string $last_name,
-        public string $email,
-        public bool $email_verified,
-        public bool $account_owner,
-        public string $locale,
-        public bool $collaborator,
-        public string $user_scopes,
+        public string $access_token,
     ) {}
 
-    public static function merge(OnlineSessionData $online, OfflineSessionData $offline): SessionData
+    public static function merge(?OnlineSessionData $online, ?OfflineSessionData $offline): ?SessionData
     {
-        return new self(
-            id: $offline->id,
-            shop: $offline->shop,
-            state: $offline->state,
-            is_online: false,
-            scope: $offline->scope,
-            expires_at: $offline->expires_at,
-            access_token: $offline->access_token,
+        if ($online === null && $offline === null) {
+            return null;
+        }
 
-            user_id: $online->user_id,
-            first_name: $online->first_name,
-            last_name: $online->last_name,
-            email: $online->email,
-            email_verified: $online->email_verified,
-            account_owner: $online->account_owner,
-            locale: $online->locale,
-            collaborator: $online->collaborator,
-            user_scopes: $online->user_scopes,
+        return new self(
+            id: $offline?->id ?? $online?->id,
+            shop: $offline?->shop ?? $online?->shop,
+            is_online: $offline?->is_online ?? $online?->is_online,
+            scope: $offline?->scope ?? $online?->scope,
+            access_token: $offline?->access_token ?? $online?->access_token,
         );
     }
 }

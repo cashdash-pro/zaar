@@ -1,8 +1,8 @@
 <?php
 
-namespace CashDash\Zaar\Repositories\Sessions;
+namespace CashDash\Zaar\Repositories;
 
-use CashDash\Zaar\Concerns\ShopifySessionsRepositoryInterface;
+use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 
@@ -43,5 +43,14 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
             ->first();
 
         return $session?->toData();
+    }
+
+    public function onlineSessionFor(int $shopifyUserId): ?OnlineSessionData
+    {
+        return $this->model()::query()
+            ->where('shopify_user_id', $shopifyUserId)
+            ->latest()
+            ->first()
+            ?->toData();
     }
 }

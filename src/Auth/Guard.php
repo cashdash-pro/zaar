@@ -4,17 +4,13 @@ namespace CashDash\Zaar\Auth;
 
 use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeSessionToken;
 use CashDash\Zaar\Actions\TokenExchangeAuth\GetTokenFromRequest;
-use CashDash\Zaar\Actions\TokenExchangeAuth\LoadOfflineSession;
-use CashDash\Zaar\Actions\TokenExchangeAuth\LoadOnlineSession;
-use CashDash\Zaar\Actions\User\ShopifyCreation;
-use CashDash\Zaar\Actions\User\UserCreation;
-use CashDash\Zaar\Concerns\ShopifyRepositoryInterface;
-use CashDash\Zaar\Concerns\UserRepositoryInterface;
+use CashDash\Zaar\Auth\Strategies\EmbeddedStrategy;
+use CashDash\Zaar\Auth\Strategies\ExternalStrategy;
+use CashDash\Zaar\Contracts\AuthFlow;
 use CashDash\Zaar\Dtos\SessionData;
-use CashDash\Zaar\Events\SessionAuthenticated;
-use CashDash\Zaar\Events\ShopifyTenantLoaded;
 use CashDash\Zaar\SessionType;
 use CashDash\Zaar\Zaar;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -61,70 +57,28 @@ class Guard
     /**
      * Retrieve the authenticated user for the incoming request.
      *
-     * @return mixed
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): ?Authenticatable
     {
-
+        $user = null;
         foreach (Arr::wrap(config('zaar.guard', 'web')) as $guard) {
             if ($user = $this->auth->guard($guard)->user()) {
-                return $user;
+                break;
             }
         }
 
-        if (! $bearer_token = GetTokenFromRequest::make()->handle($request)) {
-            return null;
-        }
+        /** @var ExternalStrategy|EmbeddedStrategy $auth */
+        $auth = $user  ? app(ExternalStrategy::class) :  app(EmbeddedStrategy::class);
 
-        $sessionToken = DecodeSessionToken::make()->handle($bearer_token);
-
-        if (! $sessionToken) {
-            return null;
-        }
-
-        $sessionData = LoadOnlineSession::make()->handle($bearer_token, $sessionToken);
-
-        $user = app(UserRepositoryInterface::class)->find($sessionData);
-
-        if (! $user) {
-            $user = UserCreation::make()->handle($sessionData);
-        }
-
-        if (! $this->hasValidProvider($user)) {
-            return null;
-        }
-
-        if (Zaar::sessionType() === SessionType::OFFLINE) {
-            $offline = LoadOfflineSession::make()->handle($bearer_token, $sessionToken);
-            $sessionData = SessionData::merge($sessionData, $offline);
-        }
-
-        $shopify = app(ShopifyRepositoryInterface::class)->find($sessionData->shop);
-        if (! $shopify) {
-            $shopify = ShopifyCreation::make()->handle($sessionData);
-        }
-
-        event(new ShopifyTenantLoaded($shopify));
-
-        event(new SessionAuthenticated($sessionData));
-
-        return $user;
-    }
-
-    /**
-     * Determine if the shopify model matches the provider's model type.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $user
-     * @return bool
-     */
-    protected function hasValidProvider($user)
-    {
-        if (is_null($this->provider)) {
-            return true;
-        }
-
-        $model = config("auth.providers.{$this->provider}.model");
-
-        return $user instanceof $model;
+        return $auth
+            ->withOnlineSession($request, $user)
+            ->withUser()
+            ->withDomain()
+            ->when(Zaar::sessionType() === SessionType::OFFLINE, fn (AuthFlow $auth) => $auth->withOfflineSession())
+            ->mergeSessions()
+            ->withShopifyModel()
+            ->bindData()
+            ->dispatchEvents()
+            ->getUser();
     }
 }

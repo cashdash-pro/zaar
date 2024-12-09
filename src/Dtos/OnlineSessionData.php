@@ -2,14 +2,36 @@
 
 namespace CashDash\Zaar\Dtos;
 
+use Carbon\CarbonImmutable;
 use CashDash\Zaar\Concerns\Actions\AsFake;
 use CashDash\Zaar\Concerns\Actions\AsObject;
 use CashDash\Zaar\Models\ShopifySession;
 
-class OnlineSessionData extends SessionData
+class OnlineSessionData
 {
     use AsFake;
     use AsObject;
+
+    public function __construct(
+        public string $id,
+        public string $shop,
+        public string $state,
+        public bool $is_online,
+        public ?string $scope,
+        public ?CarbonImmutable $expires_at,
+        #[\SensitiveParameter]
+        public ?string $access_token,
+
+        public int $user_id,
+        public string $first_name,
+        public string $last_name,
+        public string $email,
+        public bool $email_verified,
+        public bool $account_owner,
+        public string $locale,
+        public bool $collaborator,
+        public string $user_scopes,
+    ) {}
 
     public static function fromModel(ShopifySession $model): OnlineSessionData
     {

@@ -1,9 +1,9 @@
 <?php
 
-namespace CashDash\Zaar\Actions\User;
+namespace CashDash\Zaar\Actions\Creation;
 
 use CashDash\Zaar\Concerns\Actions\AsObject;
-use CashDash\Zaar\Concerns\UserRepositoryInterface;
+use CashDash\Zaar\Contracts\UserRepositoryInterface;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Events\ShopifyUserCreated;
 use Illuminate\Contracts\Auth\Authenticatable;

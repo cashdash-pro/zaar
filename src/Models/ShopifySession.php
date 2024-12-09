@@ -38,7 +38,6 @@ class ShopifySession extends Model
         'user_scopes',
     ];
 
-    public static function createFromOnline(OnlineSessionData $session): self {}
 
     public function user(): BelongsTo
     {

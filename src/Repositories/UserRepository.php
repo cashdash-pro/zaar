@@ -2,7 +2,7 @@
 
 namespace CashDash\Zaar\Repositories;
 
-use CashDash\Zaar\Concerns\UserRepositoryInterface;
+use CashDash\Zaar\Contracts\UserRepositoryInterface;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Zaar;
 use Illuminate\Database\Eloquent\Model;
@@ -19,9 +19,9 @@ class UserRepository implements UserRepositoryInterface
         return config('zaar.repositories.user.shopify_user_id_column', 'shopify_user_id');
     }
 
-    public function find(OnlineSessionData $session): ?Model
+    public function find(string|int $user_id): ?Model
     {
-        return $this->model()::where($this->shopifyUserIdColumn(), $session->user_id)->first();
+        return $this->model()::where($this->shopifyUserIdColumn(), $user_id)->first();
     }
 
     public function create(OnlineSessionData $onlineSessionData)
@@ -36,7 +36,7 @@ class UserRepository implements UserRepositoryInterface
             ],
             [
                 'name' => $onlineSessionData->first_name.' '.$onlineSessionData->last_name,
-                'password' => \Str::random(16),
+                'password' => null,
                 config('zaar.user.shopify_user_id_column', 'shopify_user_id') => $onlineSessionData->user_id,
                 'email_verified_at' => $onlineSessionData->email_verified ? now() : null,
             ]

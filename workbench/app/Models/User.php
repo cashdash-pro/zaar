@@ -2,15 +2,18 @@
 
 namespace Workbench\App\Models;
 
+use CashDash\Zaar\Concerns\HasOnlineSessions;
+use CashDash\Zaar\Contracts\ProvidesShopifySessions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Workbench\Database\Factories\UserFactory;
 
-class User extends Authenticatable
+class User extends Authenticatable implements ProvidesShopifySessions
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    use HasOnlineSessions;
 
     protected static function newFactory()
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace CashDash\Zaar\Concerns;
+namespace CashDash\Zaar\Contracts;
 
 use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
@@ -14,4 +14,6 @@ interface ShopifySessionsRepositoryInterface
     public function findOffline(string $domain): ?OfflineSessionData;
 
     public function createOffline(OfflineSessionData $sessionData): void;
+
+    public function onlineSessionFor(int $shopifyUserId): ?OnlineSessionData;
 }

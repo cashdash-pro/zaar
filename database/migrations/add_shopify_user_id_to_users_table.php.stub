@@ -8,12 +8,14 @@ return new class extends Migration
 {
     public function up()
     {
-       Schema::table(config('zaar.user.table'), function (Blueprint $table) {
+       Schema::table('users', function (Blueprint $table) {
 
             $table
-                ->bigInteger(config('zaar.user.shopify_user_id_column'))
+                ->bigInteger(config('zaar.repositories.user.shopify_user_id_column'))
                 ->nullable();
 //                ->after('password');
+
+           $table->string('password')->change()->nullable();
         });
     }
 };

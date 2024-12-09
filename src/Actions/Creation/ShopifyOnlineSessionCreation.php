@@ -1,11 +1,11 @@
 <?php
 
-namespace CashDash\Zaar\Actions\User;
+namespace CashDash\Zaar\Actions\Creation;
 
 use CashDash\Zaar\Actions\TokenExchangeAuth\ExchangeForSessionData;
 use CashDash\Zaar\Concerns\Actions\AsObject;
-use CashDash\Zaar\Concerns\ShopifySessionsRepositoryInterface;
-use CashDash\Zaar\Dtos\SessionToken;
+use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
+use CashDash\Zaar\Dtos\EmbeddedAuthData;
 use CashDash\Zaar\Events\ShopifyOnlineSessionCreated;
 
 class ShopifyOnlineSessionCreation
@@ -16,9 +16,9 @@ class ShopifyOnlineSessionCreation
         private ShopifySessionsRepositoryInterface $repository
     ) {}
 
-    public function handle(string $bearer_token, SessionToken $sessionToken)
+    public function handle(EmbeddedAuthData $data)
     {
-        $sessionData = ExchangeForSessionData::make()->handleOnline($bearer_token, $sessionToken);
+        $sessionData = ExchangeForSessionData::make()->handleOnline($data->bearer_token, $data->session_token);
 
         $this->repository->createOnline($sessionData);
 

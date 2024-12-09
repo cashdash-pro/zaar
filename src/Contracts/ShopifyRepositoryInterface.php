@@ -1,6 +1,6 @@
 <?php
 
-namespace CashDash\Zaar\Concerns;
+namespace CashDash\Zaar\Contracts;
 
 use CashDash\Zaar\Dtos\ShopifyInfo;
 use Illuminate\Database\Eloquent\Model;

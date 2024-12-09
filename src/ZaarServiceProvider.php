@@ -4,23 +4,22 @@ namespace CashDash\Zaar;
 
 use CashDash\Zaar\Auth\Directive;
 use CashDash\Zaar\Auth\Guard;
-use CashDash\Zaar\Concerns\ShopifyRepositoryInterface;
-use CashDash\Zaar\Concerns\ShopifySessionsRepositoryInterface;
-use CashDash\Zaar\Concerns\UserRepositoryInterface;
-use CashDash\Zaar\Console\Commands\InstallCommand;
+use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
+use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
+use CashDash\Zaar\Contracts\UserRepositoryInterface;
 use CashDash\Zaar\Http\Middleware\AddEmbeddedCspHeaderMiddleware;
+use CashDash\Zaar\Http\Middleware\ReauthenticateEmbeddedRequestsMiddleware;
 use CashDash\Zaar\Sessions\CustomSessionManager;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Auth\Factory;
-use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use function Laravel\Prompts\select;
-
 
 class ZaarServiceProvider extends PackageServiceProvider
 {
@@ -34,13 +33,13 @@ class ZaarServiceProvider extends PackageServiceProvider
                 'create_shopify_sessions_table',
                 'add_shopify_user_id_to_users_table',
             ])
-            ->hasInstallCommand(function (\Spatie\LaravelPackageTools\Commands\InstallCommand $command) {
+            ->hasInstallCommand(function (InstallCommand $command) {
                 $command
-                    ->startWith(fn() => $this->checkInstallStatus($command))
+                    ->startWith(fn () => $this->checkInstallStatus($command))
                     ->publishConfigFile()
                     ->publishMigrations()
                     ->askToRunMigrations()
-                    ->askToStarRepoOnGitHub('spatie/laravel-package-tools');
+                    ->endWith(fn () => $command->info('You should add the `HasOnlineDatabaseSessions` trait to your User model to enable session management.'));
             });
 
     }
@@ -71,13 +70,25 @@ class ZaarServiceProvider extends PackageServiceProvider
         $this->disableCsrfForPackageRoutes();
         $this->registerBladeDirectives();
         $this->bindRepositories();
+        $this->registerRoutes();
+        $this->registerViews();
 
-        // TODO: for some reason this is not working
-        $this->app->booted(function (Application $kernel) {
+        $this->app->booted(function () {
             $this->app['router']->prependMiddlewareToGroup('web', AddEmbeddedCspHeaderMiddleware::class);
+            $this->app['router']->prependMiddlewareToGroup('web', ReauthenticateEmbeddedRequestsMiddleware::class);
+            $this->app['router']->middlewareGroup('shopify', config('zaar.default_middleware'));
         });
     }
 
+    private function registerViews(): void
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'zaar');
+    }
+
+    private function registerRoutes(): void
+    {
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+    }
 
     private function bindRepositories(): void
     {
@@ -98,6 +109,7 @@ class ZaarServiceProvider extends PackageServiceProvider
     protected function disableCsrfForPackageRoutes(): void
     {
         $routes = config('zaar.disabled_csrf_routes', ['*']);
+
         if (! is_array($routes)) {
             $routes = [$routes];
         }
@@ -119,15 +131,17 @@ class ZaarServiceProvider extends PackageServiceProvider
      */
     protected function createGuard($auth, $config): RequestGuard
     {
+        $guard = new Guard($auth, $config['provider']);
+
         return new RequestGuard(
-            new Guard($auth, $config['provider']),
+            $guard,
             request(),
             $auth->createUserProvider($config['provider'] ?? null)
         );
     }
 
     /**
-     * Configure the Sanctum authentication guard.
+     * Configure the Zaar authentication guard.
      */
     protected function configureGuard(): void
     {
@@ -147,12 +161,9 @@ class ZaarServiceProvider extends PackageServiceProvider
             $command->fail('You are using the cookie session driver, Zaar is incompatible with this driver. Please change your session driver in session.php to any other driver.');
         }
 
-
         $hasExistingShopifyModel = select('Do you have an existing Shopify model?', ['Yes', 'No'], default: 'No') === 'Yes';
         $addAxiosInterceptor = select('Would you like to add an Axios interceptor to automatically send the session token with every request?', ['Yes', 'No'], default: 'Yes') === 'Yes';
         $installZaar = select('Would you like to automatically include the @zaarHead Blade directive?', ['Yes', 'No'], default: 'Yes') === 'Yes';
-
-
 
         if ($hasExistingShopifyModel) {
             $command->error('You have an existing Shopify model, you will need to manually adjust the config and migrations to match your model.');
@@ -171,11 +182,11 @@ class ZaarServiceProvider extends PackageServiceProvider
                 $command->warn('We were unable to detect your app.blade.php file, you may need to manually add the @zaar directive to your blade file.');
             } else {
                 $contents = file_get_contents($blade);
-                if (!str_contains($contents, '@zaar')) {
+                if (! str_contains($contents, '@zaar')) {
                     $contents = str_replace('</head>', "\t@zaar\n\n\t</head>", $contents);
                     file_put_contents($blade, $contents);
                 } else {
-                    $command->comment("@zaarHead directive already installed.");
+                    $command->comment('@zaarHead directive already installed.');
                 }
             }
         }
@@ -211,6 +222,7 @@ CODE;
         } else {
             if (str_contains($contents, 'window.shopify.idToken')) {
                 $command->comment('Axios interceptor already installed.');
+
                 return;
             }
             $command->warn('It seems you already have have an Axios interceptor in your bootstrap.ts/js file, you may need to adjust the code to include the session token.');

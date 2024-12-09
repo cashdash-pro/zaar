@@ -2,14 +2,15 @@
 
 namespace CashDash\Zaar\Actions\TokenExchangeAuth;
 
-use CashDash\Zaar\Actions\User\ShopifyOfflineSessionCreation;
+use CashDash\Zaar\Actions\Resolvers\ResolveOfflineSession;
 use CashDash\Zaar\Concerns\Actions\AsFake;
 use CashDash\Zaar\Concerns\Actions\AsObject;
-use CashDash\Zaar\Concerns\ShopifySessionsRepositoryInterface;
+use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
+use CashDash\Zaar\Dtos\EmbeddedAuthData;
 use CashDash\Zaar\Dtos\OfflineSessionData;
-use CashDash\Zaar\Dtos\SessionToken;
 use CashDash\Zaar\Events\OfflineSessionCreated;
 use CashDash\Zaar\Events\OfflineSessionLoaded;
+use CashDash\Zaar\Exceptions\OfflineSessionNotFoundException;
 
 readonly class LoadOfflineSession
 {
@@ -20,22 +21,32 @@ readonly class LoadOfflineSession
         private ShopifySessionsRepositoryInterface $repository
     ) {}
 
-    public function handle(string $bearer_token, SessionToken $sessionToken): OfflineSessionData
+    /**
+     * @param string $domain
+     * @param EmbeddedAuthData|null $auth
+     * @return OfflineSessionData
+     * @throws OfflineSessionNotFoundException
+     */
+    public function handle(string $domain, ?EmbeddedAuthData $auth): OfflineSessionData
     {
-        return \DB::transaction(function () use ($bearer_token, $sessionToken) {
+        \DB::beginTransaction();
 
-            $session = $this->repository->findOffline($sessionToken->dest);
-
-            if (! $session) {
-                $session = ShopifyOfflineSessionCreation::make()->handle($bearer_token, $sessionToken);
-                event(new OfflineSessionCreated($session));
+        try {
+            $session = $this->repository->findOffline($domain);
+            if ( !$session) {
+                $session = ResolveOfflineSession::make()->handle($auth);
             }
+            \DB::commit();
 
             app()->instance(OfflineSessionData::class, $session);
 
             event(new OfflineSessionLoaded($session));
 
             return $session;
-        });
+        } catch (\OfflineSessionNotFoundException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+        \DB::rollBack();
     }
 }

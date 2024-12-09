@@ -2,7 +2,7 @@
 
 namespace CashDash\Zaar\Repositories;
 
-use CashDash\Zaar\Concerns\ShopifyRepositoryInterface;
+use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Dtos\ShopifyInfo;
 use CashDash\Zaar\Models\Shopify;
 use Illuminate\Database\Eloquent\Model;
