@@ -10,7 +10,7 @@ class FixReferrerMiddleware
 {
     public function handle(Request $request, Closure $next): mixed
     {
-        if (!Zaar::isEmbedded()) {
+        if (! Zaar::isEmbedded()) {
             return $next($request);
         }
 
