@@ -31,7 +31,7 @@ class EnsureSessionStartedMiddleware
         if (config('zaar.shopify_app.session_type') !== SessionType::ONLINE) {
             Zaar::offlineSession();
         }
-        
+
         return $next($request);
     }
 }
