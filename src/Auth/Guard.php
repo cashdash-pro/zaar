@@ -8,8 +8,10 @@ use CashDash\Zaar\Auth\Strategies\EmbeddedStrategy;
 use CashDash\Zaar\Auth\Strategies\ExternalStrategy;
 use CashDash\Zaar\Contracts\AuthFlow;
 use CashDash\Zaar\Dtos\SessionData;
+use CashDash\Zaar\Http\Middleware\ReauthenticateEmbeddedRequestsMiddleware;
 use CashDash\Zaar\SessionType;
 use CashDash\Zaar\Zaar;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Http\Request;
@@ -67,18 +69,30 @@ class Guard
             }
         }
 
-        /** @var ExternalStrategy|EmbeddedStrategy $auth */
-        $auth = $user  ? app(ExternalStrategy::class) :  app(EmbeddedStrategy::class);
 
-        return $auth
+        /** @var ExternalStrategy|EmbeddedStrategy $auth */
+        $auth = Zaar::isEmbedded()  ? app(EmbeddedStrategy::class) :  app(ExternalStrategy::class);
+
+        \Log::info('was embedded: ' . (Zaar::isEmbedded() ? 'true' : 'false'));
+
+        $user =  $auth
             ->withOnlineSession($request, $user)
             ->withUser()
             ->withDomain()
             ->when(Zaar::sessionType() === SessionType::OFFLINE, fn (AuthFlow $auth) => $auth->withOfflineSession())
             ->mergeSessions()
-            ->withShopifyModel()
             ->bindData()
+            ->withShopifyModel()
             ->dispatchEvents()
             ->getUser();
+
+        if (Zaar::isEmbedded() && !$user) {
+            // we can fix this
+            Authenticate::redirectUsing(function () {
+                return ReauthenticateEmbeddedRequestsMiddleware::getRedirectUrl(request());
+            });
+        }
+
+        return $user;
     }
 }

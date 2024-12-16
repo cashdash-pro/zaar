@@ -20,11 +20,16 @@ readonly class DecodeSessionToken
             SignatureInvalidException::class,
         ];
 
+        $secret = config('zaar.shopify_app.client_secret');
+        if (! $secret) {
+            throw new \Exception('Zaar Shopify Client Secret is not set');
+        }
+
         try {
             JWT::$leeway = 60;
             $payload = JWT::decode(
                 $bearer_token,
-                new Key(config('zaar.shopify_app.client_secret'), 'HS256')
+                new Key($secret, 'HS256')
             );
 
             return SessionToken::parseToken($payload);

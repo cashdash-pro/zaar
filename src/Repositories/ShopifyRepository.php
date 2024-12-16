@@ -5,6 +5,7 @@ namespace CashDash\Zaar\Repositories;
 use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Dtos\ShopifyInfo;
 use CashDash\Zaar\Models\Shopify;
+use CashDash\Zaar\Zaar;
 use Illuminate\Database\Eloquent\Model;
 
 class ShopifyRepository implements ShopifyRepositoryInterface
@@ -19,6 +20,10 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
     public function updateOrCreate(ShopifyInfo $info): Model
     {
+        if ($callback = Zaar::$createShopifyCallback) {
+            return $callback($info);
+        }
+
         return $this->model()::updateOrCreate([
             'domain' => $info->domain,
         ], [

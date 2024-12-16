@@ -17,13 +17,18 @@ class ExchangeForSessionData
 
     public function post(string $bearer_token, SessionToken $token, bool $isOnline): mixed
     {
+        $secret = config('zaar.shopify_app.client_secret');
+        if (! $secret) {
+            throw new \Exception('Zaar Shopify Client Secret is not set');
+        }
+
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ])->retry(3)
             ->post($token->adminDomain().'/oauth/access_token', [
                 'client_id' => config('zaar.shopify_app.client_id'),
-                'client_secret' => config('zaar.shopify_app.client_secret'),
+                'client_secret' =>$secret,
                 'grant_type' => 'urn:ietf:params:oauth:grant-type:token-exchange',
                 'subject_token' => $bearer_token,
                 'subject_token_type' => 'urn:ietf:params:oauth:token-type:id_token',

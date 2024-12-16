@@ -5,6 +5,7 @@ namespace CashDash\Zaar\Auth\Strategies;
 use CashDash\Zaar\Actions\Creation\ShopifyCreation;
 use CashDash\Zaar\Actions\Creation\ShopifyOfflineSessionCreation;
 use CashDash\Zaar\Actions\Creation\ShopifyOnlineSessionCreation;
+use CashDash\Zaar\Actions\Creation\UserCreation;
 use CashDash\Zaar\Contracts\AuthFlow;
 use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
@@ -55,13 +56,13 @@ class EmbeddedStrategy implements AuthFlow
 
     public function withUser(): AuthFlow
     {
-        if (!$this->auth) {
+        if (!$this->onlineSession) {
             return $this;
         }
 
         $user = $this->userRepository->find($this->auth->session_token->sub);
         if (! $user) {
-            $user = ShopifyOnlineSessionCreation::make()->handle($this->auth);
+            $user = UserCreation::make()->handle($this->onlineSession);
         }
         $this->user = $user;
         return $this;

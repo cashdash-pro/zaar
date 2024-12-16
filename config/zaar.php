@@ -1,5 +1,6 @@
 <?php
 
+
 return [
     'shopify_app' => [
         'client_id' => env('SHOPIFY_APP_CLIENT_ID'),
@@ -21,9 +22,13 @@ return [
     'default_session_repository' => 'database',
 
     'default_middleware' => [
+        \CashDash\Zaar\Http\Middleware\FixReferrerMiddleware::class,
+        \CashDash\Zaar\Http\Middleware\AddParamsToRedirectMiddleware::class,
+        \CashDash\Zaar\Http\Middleware\AddEmbeddedCspHeaderMiddleware::class,
+        \CashDash\Zaar\Http\Middleware\ReauthenticateEmbeddedRequestsMiddleware::class,
         'web',
         'auth:shopify',
-        \CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware::class
+        \CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware::class,
     ],
 
     /*
@@ -37,7 +42,7 @@ return [
         ],
 
         'shopify' => [
-            'type' => CashDash\Zaar\Repositories\ShopifyRepositoryInterace::class,
+            'type' => \CashDash\Zaar\Repositories\ShopifyRepository::class,
             'model' => \CashDash\Zaar\Models\Shopify::class,
             'shop_domain_column' => 'domain',
         ],

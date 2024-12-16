@@ -7,8 +7,7 @@ use CashDash\Zaar\Auth\Guard;
 use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Contracts\UserRepositoryInterface;
-use CashDash\Zaar\Http\Middleware\AddEmbeddedCspHeaderMiddleware;
-use CashDash\Zaar\Http\Middleware\ReauthenticateEmbeddedRequestsMiddleware;
+use CashDash\Zaar\Http\Middleware\RemoveCookiesMiddleware;
 use CashDash\Zaar\Sessions\CustomSessionManager;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Console\Command;
@@ -74,9 +73,11 @@ class ZaarServiceProvider extends PackageServiceProvider
         $this->registerViews();
 
         $this->app->booted(function () {
-            $this->app['router']->prependMiddlewareToGroup('web', AddEmbeddedCspHeaderMiddleware::class);
-            $this->app['router']->prependMiddlewareToGroup('web', ReauthenticateEmbeddedRequestsMiddleware::class);
             $this->app['router']->middlewareGroup('shopify', config('zaar.default_middleware'));
+
+            $this->app['router']->prependMiddlewareToGroup('web', RemoveCookiesMiddleware::class);
+            $this->app['router']->middleware(RemoveCookiesMiddleware::class);
+//            $this->app['router']->prependMiddlewareToGroup($group, $middleware)
         });
     }
 
@@ -211,6 +212,12 @@ window.axios.interceptors.request.use(async function (config) {
 
     const token = await window.shopify.idToken();
     config.headers['Authorization'] = `Bearer ${token}`;
+
+    // Sometime some browsers don't send the correct referrer when in an iframe
+    // This will ensure the referrer is always sent, so inertia redirects can work correctly
+    // This works in combination with the FixReferrerMiddleware
+    config.headers['X-Referrer'] = window.location.href;
+
     return config;
 });
 CODE;

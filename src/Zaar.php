@@ -7,7 +7,6 @@ use CashDash\Zaar\Dtos\EmbeddedAuthData;
 use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Dtos\SessionData;
-use CashDash\Zaar\Exceptions\OnlineSessionNotLoadedException;
 use CashDash\Zaar\Exceptions\ShopifySessionNotStartedException;
 
 class Zaar
@@ -25,6 +24,10 @@ class Zaar
      * @var callable|null
      */
     public static $resolveExternalRequest = null;
+    /**
+     * @var null|callable
+     */
+    public static $createShopifyCallback = null;
 
     /**
      * Supply a callback that takes an OnlineSessionData object and returns a user object.
@@ -32,6 +35,11 @@ class Zaar
     public static function createUserUsing(callable $callback): void
     {
         self::$createUserCallback = $callback;
+    }
+
+    public static function createShopifyUsing(callable $callback): void
+    {
+        self::$createShopifyCallback = $callback;
     }
 
     /**
@@ -64,10 +72,8 @@ class Zaar
     }
 
     /**
-     * @throws ShopifySessionNotStartedException
-     * @throws OnlineSessionNotLoadedException
      */
-    public static function session(): SessionData
+    public static function session(): ?SessionData
     {
         $online = app()->has(OnlineSessionData::class) ? app(OnlineSessionData::class) : null;
         $offline = app()->has(OfflineSessionData::class) ? app(OfflineSessionData::class) : null;
@@ -114,6 +120,21 @@ class Zaar
             return true;
         }
 
-        return  DiscoverEmbeddedAuth::make()->handle(request()) !== null;
+        $auth = DiscoverEmbeddedAuth::make()->handle(request());
+
+        if ($auth) {
+            return true;
+        }
+
+        if (request()->query('embedded') === '1') {
+            return true;
+        }
+
+        if (request()->header('sec-fetch-dest') === 'iframe'
+            && request()->header('sec-fetch-mode') === 'navigate') {
+            return true;
+        }
+
+        return false;
     }
 }
