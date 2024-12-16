@@ -1,6 +1,6 @@
 <?php
 
-use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeSessionToken;
+use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeShopifySessionToken;
 use CashDash\Zaar\Dtos\SessionToken;
 
 test('retrieveByToken processes valid JWT token', function () {
@@ -8,7 +8,7 @@ test('retrieveByToken processes valid JWT token', function () {
     $sid = 'sid';
     $token = createJwtToken(sid: $sid);
 
-    $result = DecodeSessionToken::make()->handle($token);
+    $result = DecodeShopifySessionToken::make()->handle($token);
 
     // Assert
     expect($result)
@@ -20,7 +20,7 @@ test('retrieveByToken handles token failures', function () {
     // Arrange
     $token = createJwtToken('12345', -3600);
 
-    $result = DecodeSessionToken::make()->handle($token);
+    $result = DecodeShopifySessionToken::make()->handle($token);
 
     // Act & Assert
     expect($result)

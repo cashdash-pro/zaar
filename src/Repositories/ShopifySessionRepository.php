@@ -27,12 +27,18 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
 
     public function createOffline(OfflineSessionData $sessionData): void
     {
-        $this->model()::create($sessionData->toArray())->toData();
+        $this->model()::updateOrCreate(
+            ['id' => $sessionData->id],
+            $sessionData->toArray()
+        );
     }
 
     public function createOnline(OnlineSessionData $sessionData): void
     {
-        $this->model()::create($sessionData->toArray());
+        $this->model()::updateOrCreate(
+            ['id' => $sessionData->id],
+            $sessionData->toArray()
+        );
     }
 
     public function findOffline(string $domain): ?OfflineSessionData

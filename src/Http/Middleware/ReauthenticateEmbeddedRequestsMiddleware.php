@@ -2,7 +2,7 @@
 
 namespace CashDash\Zaar\Http\Middleware;
 
-use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeSessionToken;
+use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeShopifySessionToken;
 use CashDash\Zaar\Actions\TokenExchangeAuth\GetTokenFromRequest;
 use CashDash\Zaar\Zaar;
 use Closure;
@@ -18,7 +18,7 @@ class ReauthenticateEmbeddedRequestsMiddleware
 
         $token = GetTokenFromRequest::make()->handle($request);
         if ($token) {
-            if (DecodeSessionToken::make()->handle($token) !== null) {
+            if (DecodeShopifySessionToken::make()->handle($token) !== null) {
                 return $next($request);
             }
             // the token is likely expired, so this will still be required

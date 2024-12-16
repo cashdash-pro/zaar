@@ -2,7 +2,6 @@
 
 namespace CashDash\Zaar\Actions\TokenExchangeAuth;
 
-use Carbon\CarbonImmutable;
 use CashDash\Zaar\Concerns\Actions\AsFake;
 use CashDash\Zaar\Concerns\Actions\AsObject;
 use CashDash\Zaar\Dtos\OfflineSessionData;
@@ -44,30 +43,14 @@ class ExchangeForSessionData
     {
         $json = $this->post($bearer_token, $sessionToken, true);
 
-        return new OnlineSessionData(
-            id: $sessionToken->sid,
-            shop: $sessionToken->dest,
-            state: 'token_exchange',
-            is_online: true,
-            scope: $json['scope'] ?? null,
-            expires_at: $json['expires_in'] ? CarbonImmutable::now()->addSeconds($json['expires_in']) : null,
-            access_token: $json['access_token'],
-            user_id: $json['associated_user']['id'],
-            first_name: $json['associated_user']['first_name'],
-            last_name: $json['associated_user']['last_name'],
-            email: $json['associated_user']['email'],
-            email_verified: $json['associated_user']['email_verified'],
-            account_owner: $json['associated_user']['account_owner'],
-            locale: $json['associated_user']['locale'],
-            collaborator: $json['associated_user']['collaborator'],
-            user_scopes: $json['associated_user_scope'],
-        );
+        return OnlineSessionData::fromTokenResponse($sessionToken->sid, $sessionToken->dest,$json);
     }
 
     public function handleOffline(string $bearer_token, SessionToken $sessionToken): OfflineSessionData
     {
         $json = $this->post($bearer_token, $sessionToken, false);
 
+        return OfflineSessionData::fromTokenResponse($domain, $json);
         return new OfflineSessionData(
             id: $sessionToken->dest.'_offline',
             shop: $sessionToken->dest,

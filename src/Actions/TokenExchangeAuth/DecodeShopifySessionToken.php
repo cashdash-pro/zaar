@@ -9,7 +9,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
 
-readonly class DecodeSessionToken
+readonly class DecodeShopifySessionToken
 {
     use AsFake;
     use AsObject;

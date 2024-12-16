@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-
 use function Laravel\Prompts\select;
 
 class ZaarServiceProvider extends PackageServiceProvider
@@ -73,8 +72,15 @@ class ZaarServiceProvider extends PackageServiceProvider
         $this->registerRoutes();
         $this->registerViews();
 
+        if (config('zaar.socialite.enabled')) {
+            $this->registerSocialite();
+        }
+
         $this->app->booted(function () {
-            $this->app['router']->middlewareGroup('shopify', config('zaar.default_middleware'));
+            $this->app['router']->middlewareGroup('shopify', config('zaar.middleware.shopify'));
+            $this->app['router']->middlewareGroup('shopify:web', config('zaar.middleware.shopify:web'));
+
+            $this->app['router']->middlewareGroup('shopify:public', config('zaar.middleware.shopify:public'));
 
             $this->app['router']->prependMiddlewareToGroup('web', RemoveCookiesMiddleware::class);
             $this->app['router']->middleware(RemoveCookiesMiddleware::class);
@@ -235,5 +241,12 @@ CODE;
             }
             $command->warn('It seems you already have have an Axios interceptor in your bootstrap.ts/js file, you may need to adjust the code to include the session token.');
         }
+    }
+
+    private function registerSocialite()
+    {
+        \Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('shopify', \SocialiteProviders\Shopify\Provider::class);
+        });
     }
 }

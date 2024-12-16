@@ -55,6 +55,28 @@ class OnlineSessionData
         );
     }
 
+    public static function fromTokenResponse(string $sessionId, string $domain, array $json): OnlineSessionData
+    {
+        return new OnlineSessionData(
+            id: $sessionId,
+            shop: $domain,
+            state: 'token_exchange',
+            is_online: true,
+            scope: $json['scope'] ?? null,
+            expires_at: $json['expires_in'] ? CarbonImmutable::now()->addSeconds($json['expires_in']) : null,
+            access_token: $json['access_token'],
+            user_id: $json['associated_user']['id'],
+            first_name: $json['associated_user']['first_name'],
+            last_name: $json['associated_user']['last_name'],
+            email: $json['associated_user']['email'],
+            email_verified: $json['associated_user']['email_verified'],
+            account_owner: $json['associated_user']['account_owner'],
+            locale: $json['associated_user']['locale'],
+            collaborator: $json['associated_user']['collaborator'],
+            user_scopes: $json['associated_user_scope'],
+        );
+    }
+
     public function toArray(): array
     {
         return [

@@ -30,4 +30,6 @@ interface AuthFlow
     // this is for the Conditional trait
     /** @return self */
     public function when($value = null, ?callable $callback = null, ?callable $default = null);
+
+    public function getDomain(): ?string;
 }

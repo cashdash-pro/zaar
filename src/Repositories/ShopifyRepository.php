@@ -45,7 +45,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function find(string $domain): ?Model
     {
         return $this->model()::query()
-            ->where('domain', $domain)
+            ->where(config('zaar.repositories.shopify.shop_domain_column', 'domain'), $domain)
             ->first();
     }
 }

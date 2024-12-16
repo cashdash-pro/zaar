@@ -2,7 +2,7 @@
 
 namespace CashDash\Zaar\Auth;
 
-use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeSessionToken;
+use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeShopifySessionToken;
 use CashDash\Zaar\Actions\TokenExchangeAuth\GetTokenFromRequest;
 use CashDash\Zaar\Auth\Strategies\EmbeddedStrategy;
 use CashDash\Zaar\Auth\Strategies\ExternalStrategy;
@@ -49,7 +49,7 @@ class Guard
             return null;
         }
 
-        $token = DecodeSessionToken::make()->handle($bearer_token);
+        $token = DecodeShopifySessionToken::make()->handle($bearer_token);
 
         app()->instance(SessionData::class, $token);
 
@@ -62,7 +62,7 @@ class Guard
     public function __invoke(Request $request): ?Authenticatable
     {
         $user = null;
-        foreach (Arr::wrap(config('zaar.guard', 'web')) as $guard) {
+        foreach (Arr::wrap(config('zaar.guards', 'web')) as $guard) {
             if ($user = $this->auth->guard($guard)->user()) {
                 break;
             }
@@ -84,11 +84,22 @@ class Guard
             ->dispatchEvents()
             ->getUser();
 
-        if (Zaar::isEmbedded() && ! $user) {
+        if (! $user) {
             // we can fix this
-            Authenticate::redirectUsing(function () {
-                return ReauthenticateEmbeddedRequestsMiddleware::getRedirectUrl(request());
-            });
+            if (Zaar::isEmbedded()) {
+                Authenticate::redirectUsing(function () {
+                    return ReauthenticateEmbeddedRequestsMiddleware::getRedirectUrl(request());
+                });
+            } else {
+                Authenticate::redirectUsing(function () use ($auth) {
+                    $domain = $auth->withDomain()->getDomain();
+                    if ($domain) {
+                        return route('auth.shopify', ['domain' => $domain]);
+                    } else {
+                        return route('login');
+                    }
+                });
+            }
         }
 
         return $user;

@@ -20,6 +20,8 @@ class ExternalStrategy implements AuthFlow
 
     private ?Authenticatable $user = null;
 
+    public const SESSION_DOMAIN = 'auth_domain';
+
     public function __construct(
         private Request $request,
         private ShopifySessionsRepositoryInterface $sessionsRepository,
@@ -51,8 +53,10 @@ class ExternalStrategy implements AuthFlow
     public function withDomain(): AuthFlow
     {
         if (! $callback = Zaar::$resolveExternalRequest) {
+            $this->resolveUsingSession();
             return $this;
         }
+
         $this->domain = $callback($this->request);
         if ($this->domain) {
             // append .myshopify.com if it's not there
@@ -63,10 +67,15 @@ class ExternalStrategy implements AuthFlow
 
         if (! $this->domain) {
             // attempt to restore from session
-            $this->domain = $this->request->session()->get('auth_domain');
+            $this->resolveUsingSession();
         }
 
         return $this;
+    }
+
+    private function resolveUsingSession(): void
+    {
+        $this->domain = $this->request->session()->get(self::SESSION_DOMAIN);
     }
 
     public function withOfflineSession(): AuthFlow
@@ -92,6 +101,10 @@ class ExternalStrategy implements AuthFlow
 
     public function withShopifyModel(): AuthFlow
     {
+        if (! $this->domain) {
+            return $this;
+        }
+
         $this->shopify = $this->shopifyRepository->find($this->domain);
 
         return $this;
@@ -101,5 +114,10 @@ class ExternalStrategy implements AuthFlow
     {
         //        dd($this);
         return $this->user;
+    }
+
+    public function getDomain(): ?string
+    {
+        return $this->domain;
     }
 }

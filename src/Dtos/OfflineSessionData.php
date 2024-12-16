@@ -36,6 +36,19 @@ class OfflineSessionData
         );
     }
 
+    public static function fromTokenResponse($domain, mixed $json): OfflineSessionData
+    {
+        return new OfflineSessionData(
+            id: $domain.'_offline',
+            shop: $domain,
+            state: 'token_exchange',
+            is_online: false,
+            scope: $json['scope'] ?? null,
+            expires_at: null,
+            access_token: $json['access_token'],
+        );
+    }
+
     public function toArray(): array
     {
         return [

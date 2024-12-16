@@ -16,7 +16,7 @@ class DiscoverEmbeddedAuth
             return null;
         }
 
-        $sessionToken = DecodeSessionToken::make()->handle($bearer_token);
+        $sessionToken = DecodeShopifySessionToken::make()->handle($bearer_token);
 
         if (! $sessionToken) {
             return null;

@@ -119,4 +119,9 @@ class EmbeddedStrategy implements AuthFlow
     {
         return $this->user;
     }
+
+    public function getDomain(): ?string
+    {
+        return $this->domain;
+    }
 }
