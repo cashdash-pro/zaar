@@ -9,6 +9,9 @@ trait HasOnlineSessions
 {
     public function onlineSession(): ?OnlineSessionData
     {
-        return app(ShopifySessionsRepositoryInterface::class)->onlineSessionFor($this->{config('zaar.repositories.user.shopify_user_id_column')});
+        return app(ShopifySessionsRepositoryInterface::class)
+            ->onlineSessionFor(
+                $this->{config('zaar.repositories.user.shopify_user_id_column')
+                });
     }
 }

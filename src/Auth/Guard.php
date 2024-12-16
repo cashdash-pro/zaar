@@ -71,8 +71,6 @@ class Guard
         /** @var ExternalStrategy|EmbeddedStrategy $auth */
         $auth = Zaar::isEmbedded() ? app(EmbeddedStrategy::class) : app(ExternalStrategy::class);
 
-        \Log::info('was embedded: '.(Zaar::isEmbedded() ? 'true' : 'false'));
-
         $user = $auth
             ->withOnlineSession($request, $user)
             ->withUser()
@@ -101,7 +99,6 @@ class Guard
                 });
             }
         }
-
         return $user;
     }
 }

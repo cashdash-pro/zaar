@@ -78,9 +78,9 @@ class ZaarServiceProvider extends PackageServiceProvider
 
         $this->app->booted(function () {
             $this->app['router']->middlewareGroup('shopify', config('zaar.middleware.shopify'));
-            $this->app['router']->middlewareGroup('shopify:web', config('zaar.middleware.shopify:web'));
+            $this->app['router']->middlewareGroup('shopify.web', config('zaar.middleware.shopify:web'));
 
-            $this->app['router']->middlewareGroup('shopify:public', config('zaar.middleware.shopify:public'));
+            $this->app['router']->middlewareGroup('shopify.public', config('zaar.middleware.shopify:public'));
 
             $this->app['router']->prependMiddlewareToGroup('web', RemoveCookiesMiddleware::class);
             $this->app['router']->middleware(RemoveCookiesMiddleware::class);

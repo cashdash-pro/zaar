@@ -54,7 +54,7 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
     public function onlineSessionFor(int $shopifyUserId): ?OnlineSessionData
     {
         return $this->model()::query()
-            ->where('shopify_user_id', $shopifyUserId)
+            ->where('user_id', $shopifyUserId)
             ->latest()
             ->first()
             ?->toData();
