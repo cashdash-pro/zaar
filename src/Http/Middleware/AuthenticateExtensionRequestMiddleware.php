@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 
 class AuthenticateExtensionRequestMiddleware
 {
-
-
     /**
      * @throws AuthenticationException
      */
@@ -24,10 +22,11 @@ class AuthenticateExtensionRequestMiddleware
         }
 
         $session = DecodeExtensionSessionToken::make()->handle($token);
+
         return $next($request);
     }
 
-    private static function parseToken(array|string|null $auth): string|null
+    private static function parseToken(array|string|null $auth): ?string
     {
         if (is_null($auth)) {
             return null;

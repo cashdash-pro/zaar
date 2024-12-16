@@ -43,7 +43,7 @@ class ExchangeForSessionData
     {
         $json = $this->post($bearer_token, $sessionToken, true);
 
-        return OnlineSessionData::fromTokenResponse($sessionToken->sid, $sessionToken->dest,$json);
+        return OnlineSessionData::fromTokenResponse($sessionToken->sid, $sessionToken->dest, $json);
     }
 
     public function handleOffline(string $bearer_token, SessionToken $sessionToken): OfflineSessionData
@@ -51,6 +51,7 @@ class ExchangeForSessionData
         $json = $this->post($bearer_token, $sessionToken, false);
 
         return OfflineSessionData::fromTokenResponse($domain, $json);
+
         return new OfflineSessionData(
             id: $sessionToken->dest.'_offline',
             shop: $sessionToken->dest,

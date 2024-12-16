@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+
 use function Laravel\Prompts\select;
 
 class ZaarServiceProvider extends PackageServiceProvider

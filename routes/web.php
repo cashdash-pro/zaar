@@ -6,7 +6,6 @@ Route::get('/auth/token/reauthenticate', function () {
     return view('zaar::auth');
 });
 
-
 if (config('zaar.socialite.enabled')) {
     Route::middleware('web')->group(function () {
         Route::get('/auth/shopify', [SocialiteController::class, 'redirect'])->name('auth.shopify');
