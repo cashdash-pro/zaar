@@ -42,11 +42,10 @@ class ExternalStrategy implements AuthFlow
         $this->user = $user;
         $this->onlineSession = $user->onlineSession();
 
-        if (!$this->onlineSession) {
+        if (! $this->onlineSession) {
             // potentially redirect if there's no online session
 
         }
-
 
         return $this;
     }
