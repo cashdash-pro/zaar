@@ -49,6 +49,7 @@ readonly class LoadOnlineSession
         if (! $session) {
             $session = ShopifyOnlineSessionCreation::make()->handle($auth);
         }
+
         return $session;
     }
 }

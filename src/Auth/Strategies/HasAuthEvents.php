@@ -15,26 +15,31 @@ use Illuminate\Database\Eloquent\Model;
 trait HasAuthEvents
 {
     private ?OnlineSessionData $onlineSession = null;
-    private ?OfflineSessionData $offlineSession = null;
-    private ?Model $shopify = null;
-    private ?SessionData $sessionData = null;
-    private ?string $domain = null;
 
+    private ?OfflineSessionData $offlineSession = null;
+
+    private ?Model $shopify = null;
+
+    private ?SessionData $sessionData = null;
+
+    private ?string $domain = null;
 
     public function bindData(): AuthFlow
     {
         app()->instance(OnlineSessionData::class, $this->onlineSession);
         app()->instance(OfflineSessionData::class, $this->offlineSession);
         app()->instance(SessionData::class, $this->sessionData);
+
         return $this;
     }
 
     public function setSessionData(): AuthFlow
     {
-        if (!$this->domain) {
+        if (! $this->domain) {
             return $this;
         }
         $this->request->session()->put('auth_domain', $this->domain);
+
         return $this;
     }
 
@@ -52,6 +57,7 @@ trait HasAuthEvents
         if ($this->sessionData) {
             event(new SessionAuthenticated($this->sessionData));
         }
+
         return $this;
     }
 }

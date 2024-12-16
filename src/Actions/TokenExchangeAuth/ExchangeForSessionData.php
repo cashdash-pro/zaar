@@ -28,7 +28,7 @@ class ExchangeForSessionData
         ])->retry(3)
             ->post($token->adminDomain().'/oauth/access_token', [
                 'client_id' => config('zaar.shopify_app.client_id'),
-                'client_secret' =>$secret,
+                'client_secret' => $secret,
                 'grant_type' => 'urn:ietf:params:oauth:grant-type:token-exchange',
                 'subject_token' => $bearer_token,
                 'subject_token_type' => 'urn:ietf:params:oauth:token-type:id_token',

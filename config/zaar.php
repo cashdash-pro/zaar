@@ -1,6 +1,5 @@
 <?php
 
-
 return [
     'shopify_app' => [
         'client_id' => env('SHOPIFY_APP_CLIENT_ID'),

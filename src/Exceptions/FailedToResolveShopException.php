@@ -4,7 +4,4 @@ namespace CashDash\Zaar\Exceptions;
 
 use Exception;
 
-class FailedToResolveShopException extends Exception
-{
-
-}
+class FailedToResolveShopException extends Exception {}

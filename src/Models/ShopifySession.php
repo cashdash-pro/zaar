@@ -38,7 +38,6 @@ class ShopifySession extends Model
         'user_scopes',
     ];
 
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

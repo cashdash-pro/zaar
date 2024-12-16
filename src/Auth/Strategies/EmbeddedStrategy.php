@@ -26,24 +26,20 @@ class EmbeddedStrategy implements AuthFlow
 
     private ?EmbeddedAuthData $auth = null;
 
-
-
     public function __construct(
-        private Request                            $request,
+        private Request $request,
         private ShopifySessionsRepositoryInterface $sessionsRepository,
-        private ShopifyRepositoryInterface         $shopifyRepository,
-        private UserRepositoryInterface            $userRepository
-    )
-    {
+        private ShopifyRepositoryInterface $shopifyRepository,
+        private UserRepositoryInterface $userRepository
+    ) {
         if (app()->has(EmbeddedAuthData::class)) {
             $this->auth = app(EmbeddedAuthData::class);
         }
     }
 
-
     public function withOnlineSession(Request $request, ?Authenticatable $user): AuthFlow
     {
-        if (!$this->auth) {
+        if (! $this->auth) {
             return $this;
         }
 
@@ -51,12 +47,13 @@ class EmbeddedStrategy implements AuthFlow
         if (! $this->onlineSession) {
             $this->onlineSession = ShopifyOnlineSessionCreation::make()->handle($this->auth);
         }
+
         return $this;
     }
 
     public function withUser(): AuthFlow
     {
-        if (!$this->onlineSession) {
+        if (! $this->onlineSession) {
             return $this;
         }
 
@@ -65,6 +62,7 @@ class EmbeddedStrategy implements AuthFlow
             $user = UserCreation::make()->handle($this->onlineSession);
         }
         $this->user = $user;
+
         return $this;
     }
 
@@ -77,17 +75,17 @@ class EmbeddedStrategy implements AuthFlow
         return $this;
     }
 
-
     public function withOfflineSession(): AuthFlow
     {
-        if (!$this->auth) {
+        if (! $this->auth) {
             return $this;
         }
 
-        $this->offlineSession  = $this->sessionsRepository->findOffline($this->auth->session_token->dest);
+        $this->offlineSession = $this->sessionsRepository->findOffline($this->auth->session_token->dest);
         if (! $this->offlineSession) {
-            $this->offlineSession  = ShopifyOfflineSessionCreation::make()->handle($this->auth);
+            $this->offlineSession = ShopifyOfflineSessionCreation::make()->handle($this->auth);
         }
+
         return $this;
     }
 
@@ -98,12 +96,13 @@ class EmbeddedStrategy implements AuthFlow
         } catch (ShopifySessionNotStartedException) {
             $this->sessionData = null;
         }
+
         return $this;
     }
 
     public function withShopifyModel(): AuthFlow
     {
-        if (!$this->sessionData) {
+        if (! $this->sessionData) {
             return $this;
         }
 
@@ -112,13 +111,12 @@ class EmbeddedStrategy implements AuthFlow
             $shopify = ShopifyCreation::make()->handle($this->sessionData);
         }
         $this->shopify = $shopify;
+
         return $this;
     }
-
 
     public function getUser(): ?Authenticatable
     {
         return $this->user;
     }
-
 }

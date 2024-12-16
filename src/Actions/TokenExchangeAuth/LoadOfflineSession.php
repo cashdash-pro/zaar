@@ -8,7 +8,6 @@ use CashDash\Zaar\Concerns\Actions\AsObject;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Dtos\EmbeddedAuthData;
 use CashDash\Zaar\Dtos\OfflineSessionData;
-use CashDash\Zaar\Events\OfflineSessionCreated;
 use CashDash\Zaar\Events\OfflineSessionLoaded;
 use CashDash\Zaar\Exceptions\OfflineSessionNotFoundException;
 
@@ -22,9 +21,6 @@ readonly class LoadOfflineSession
     ) {}
 
     /**
-     * @param string $domain
-     * @param EmbeddedAuthData|null $auth
-     * @return OfflineSessionData
      * @throws OfflineSessionNotFoundException
      */
     public function handle(string $domain, ?EmbeddedAuthData $auth): OfflineSessionData
@@ -33,7 +29,7 @@ readonly class LoadOfflineSession
 
         try {
             $session = $this->repository->findOffline($domain);
-            if ( !$session) {
+            if (! $session) {
                 $session = ResolveOfflineSession::make()->handle($auth);
             }
             \DB::commit();

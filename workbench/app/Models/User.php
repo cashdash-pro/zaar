@@ -13,6 +13,7 @@ class User extends Authenticatable implements ProvidesShopifySessions
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
     use HasOnlineSessions;
 
     protected static function newFactory()

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+
 use function Laravel\Prompts\select;
 
 class ZaarServiceProvider extends PackageServiceProvider
@@ -77,7 +78,7 @@ class ZaarServiceProvider extends PackageServiceProvider
 
             $this->app['router']->prependMiddlewareToGroup('web', RemoveCookiesMiddleware::class);
             $this->app['router']->middleware(RemoveCookiesMiddleware::class);
-//            $this->app['router']->prependMiddlewareToGroup($group, $middleware)
+            //            $this->app['router']->prependMiddlewareToGroup($group, $middleware)
         });
     }
 

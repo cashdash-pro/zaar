@@ -12,19 +12,18 @@ class AddParamsToRedirectMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $response =  $next($request);
+        $response = $next($request);
 
         if ($response instanceof RedirectResponse) {
             $targetUrl = $response->getTargetUrl();
 
             $shop = Zaar::session()?->shop ?? $request->get('shop');
-            $embedded  = $request->get('embedded') ?? Zaar::isEmbedded();
+            $embedded = $request->get('embedded') ?? Zaar::isEmbedded();
 
             $id_token = GetTokenFromRequest::make()->handle($request);
 
-
             $params = http_build_query(compact('shop', 'embedded', 'id_token'));
-            $targetUrl = $targetUrl . (parse_url($targetUrl, PHP_URL_QUERY) ? '&' : '?') . $params;
+            $targetUrl = $targetUrl.(parse_url($targetUrl, PHP_URL_QUERY) ? '&' : '?').$params;
             $response->setTargetUrl($targetUrl);
         }
 

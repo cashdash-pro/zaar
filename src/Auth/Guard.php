@@ -58,7 +58,6 @@ class Guard
 
     /**
      * Retrieve the authenticated user for the incoming request.
-     *
      */
     public function __invoke(Request $request): ?Authenticatable
     {
@@ -69,13 +68,12 @@ class Guard
             }
         }
 
-
         /** @var ExternalStrategy|EmbeddedStrategy $auth */
-        $auth = Zaar::isEmbedded()  ? app(EmbeddedStrategy::class) :  app(ExternalStrategy::class);
+        $auth = Zaar::isEmbedded() ? app(EmbeddedStrategy::class) : app(ExternalStrategy::class);
 
-        \Log::info('was embedded: ' . (Zaar::isEmbedded() ? 'true' : 'false'));
+        \Log::info('was embedded: '.(Zaar::isEmbedded() ? 'true' : 'false'));
 
-        $user =  $auth
+        $user = $auth
             ->withOnlineSession($request, $user)
             ->withUser()
             ->withDomain()
@@ -86,7 +84,7 @@ class Guard
             ->dispatchEvents()
             ->getUser();
 
-        if (Zaar::isEmbedded() && !$user) {
+        if (Zaar::isEmbedded() && ! $user) {
             // we can fix this
             Authenticate::redirectUsing(function () {
                 return ReauthenticateEmbeddedRequestsMiddleware::getRedirectUrl(request());

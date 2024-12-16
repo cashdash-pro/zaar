@@ -13,12 +13,12 @@ class ResolveOnlineSession
 
     public function handle(?Authenticatable $user): ?OnlineSessionData
     {
-            if ($user instanceof ProvidesShopifySessions) {
-                return $user->onlineSession();
-            }
+        if ($user instanceof ProvidesShopifySessions) {
+            return $user->onlineSession();
+        }
 
-            // TODO: support more resolvers?
+        // TODO: support more resolvers?
 
-            return null;
+        return null;
     }
 }

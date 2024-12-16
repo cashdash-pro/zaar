@@ -15,6 +15,7 @@ class Zaar
      * @var callable|null
      */
     public static $createUserCallback = null;
+
     /**
      * @var callable|null
      */
@@ -24,6 +25,7 @@ class Zaar
      * @var callable|null
      */
     public static $resolveExternalRequest = null;
+
     /**
      * @var null|callable
      */
@@ -71,8 +73,6 @@ class Zaar
         return config('zaar.shopify_app.session_type');
     }
 
-    /**
-     */
     public static function session(): ?SessionData
     {
         $online = app()->has(OnlineSessionData::class) ? app(OnlineSessionData::class) : null;

@@ -21,6 +21,7 @@ class RemoveCookiesMiddleware
                 }
             }
         }
+
         return $response;
     }
 }

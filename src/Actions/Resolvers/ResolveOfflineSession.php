@@ -20,8 +20,9 @@ class ResolveOfflineSession
         if ($auth) {
             $session = ShopifyOfflineSessionCreation::make()->handle($auth);
             event(new OfflineSessionCreated($session));
+
             return $session;
         }
-throw new OfflineSessionNotFoundException();
+        throw new OfflineSessionNotFoundException;
     }
 }
