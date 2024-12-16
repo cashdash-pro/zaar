@@ -42,9 +42,8 @@ return [
         ],
         'shopify:public' => [
             \CashDash\Zaar\Http\Middleware\AuthenticateExtensionRequestMiddleware::class,
-        ]
+        ],
     ],
-
 
     /*
      * Data will be stored and loaded from these repositories.

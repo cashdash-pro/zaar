@@ -54,6 +54,7 @@ class ExternalStrategy implements AuthFlow
     {
         if (! $callback = Zaar::$resolveExternalRequest) {
             $this->resolveUsingSession();
+
             return $this;
         }
 
