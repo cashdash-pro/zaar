@@ -99,6 +99,7 @@ class Guard
                 });
             }
         }
+
         return $user;
     }
 }
