@@ -12,7 +12,7 @@ class AddParamsToRedirectMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Zaar::isEmbedded()) {
+        if (! Zaar::isEmbedded()) {
             return $next($request);
         }
 
