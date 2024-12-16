@@ -12,6 +12,10 @@ class AddParamsToRedirectMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
+        if (!Zaar::isEmbedded()) {
+            return $next($request);
+        }
+
         $response = $next($request);
 
         if ($response instanceof RedirectResponse) {
