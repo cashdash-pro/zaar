@@ -28,7 +28,7 @@ class AuthenticateExtensionRequestMiddleware
 
         $flow = app(PublicStrategy::class);
 
-         $flow->run(null);
+        $flow->run(null);
 
         return $next($request);
     }

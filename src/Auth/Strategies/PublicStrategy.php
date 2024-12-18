@@ -43,6 +43,7 @@ class PublicStrategy implements AuthFlow
     public function withDomain(): AuthFlow
     {
         $this->domain = $this->token->dest;
+
         return $this;
     }
 
