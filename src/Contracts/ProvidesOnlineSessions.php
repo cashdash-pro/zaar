@@ -4,7 +4,7 @@ namespace CashDash\Zaar\Contracts;
 
 use CashDash\Zaar\Dtos\OnlineSessionData;
 
-interface ProvidesShopifySessions
+interface ProvidesOnlineSessions
 {
     public function onlineSession(): ?OnlineSessionData;
 }

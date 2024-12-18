@@ -59,4 +59,11 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
             ->first()
             ?->toData();
     }
+
+    public function deleteAll(string $domain): void
+    {
+        $this->model()::query()
+            ->where('shop', $domain)
+            ->delete();
+    }
 }

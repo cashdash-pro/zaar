@@ -15,7 +15,6 @@ class OnlineSessionData
     public function __construct(
         public string $id,
         public string $shop,
-        public string $state,
         public bool $is_online,
         public ?string $scope,
         public ?CarbonImmutable $expires_at,
@@ -38,7 +37,6 @@ class OnlineSessionData
         return new self(
             id: $model->id,
             shop: $model->shop,
-            state: $model->state,
             is_online: $model->is_online,
             scope: $model->scope,
             expires_at: $model->expires_at,
@@ -60,7 +58,6 @@ class OnlineSessionData
         return new OnlineSessionData(
             id: $sessionId,
             shop: $domain,
-            state: 'token_exchange',
             is_online: true,
             scope: $json['scope'] ?? null,
             expires_at: $json['expires_in'] ? CarbonImmutable::now()->addSeconds($json['expires_in']) : null,
@@ -82,7 +79,6 @@ class OnlineSessionData
         return [
             'id' => $this->id,
             'shop' => $this->shop,
-            'state' => $this->state,
             'is_online' => $this->is_online,
             'scope' => $this->scope,
             'expires_at' => $this->expires_at,

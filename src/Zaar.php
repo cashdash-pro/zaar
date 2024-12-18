@@ -2,12 +2,23 @@
 
 namespace CashDash\Zaar;
 
+use CashDash\Zaar\Actions\Creation\ShopifyOfflineSessionCreation;
+use CashDash\Zaar\Actions\Creation\ShopifyOnlineSessionCreation;
 use CashDash\Zaar\Actions\TokenExchangeAuth\DiscoverEmbeddedAuth;
+use CashDash\Zaar\Contracts\ProvidesOfflineSession;
+use CashDash\Zaar\Contracts\ProvidesOnlineSessions;
+use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
+use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Dtos\EmbeddedAuthData;
 use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Dtos\SessionData;
+use CashDash\Zaar\Events\OfflineSessionLoaded;
+use CashDash\Zaar\Events\OnlineSessionLoaded;
+use CashDash\Zaar\Events\SessionAuthenticated;
+use CashDash\Zaar\Events\ShopifyTenantLoaded;
 use CashDash\Zaar\Exceptions\ShopifySessionNotStartedException;
+use Webmozart\Assert\Assert;
 
 class Zaar
 {
@@ -136,5 +147,65 @@ class Zaar
         }
 
         return false;
+    }
+
+    public static function clearExpiredSessionsAndReauthenticate(string $domain)
+    {
+        $repo = app(ShopifySessionsRepositoryInterface::class);
+        $repo->deleteAll($domain);
+
+        if (!app()->has(EmbeddedAuthData::class)) {
+            return false;
+        }
+
+        $auth = app(EmbeddedAuthData::class);
+
+        // Create new offline session
+        $offline = ShopifyOfflineSessionCreation::make()->handle($auth);
+        app()->instance(OfflineSessionData::class, $offline);
+
+        // Create online session if token exists
+        $online = null;
+        if ($auth->session_token) {
+            $online = ShopifyOnlineSessionCreation::make()->handle($auth);
+            app()->instance(OnlineSessionData::class, $online);
+        }
+
+        // Create merged session data
+        $sessionData = SessionData::merge($online, $offline);
+
+        // Fire events
+        if ($online) {
+            event(new OnlineSessionLoaded($online));
+        }
+
+        event(new OfflineSessionLoaded($offline));
+        event(new SessionAuthenticated($sessionData));
+
+        return true;
+    }
+
+    public static function startSessionManually(ProvidesOfflineSession|string $shopifyOrDomain, ?ProvidesOnlineSessions $user = null): bool
+    {
+        if (is_string($shopifyOrDomain)) {
+            $shopifyOrDomain = app(ShopifyRepositoryInterface::class)->find($shopifyOrDomain);
+        }
+
+        Assert::isInstanceOf($shopifyOrDomain, ProvidesOfflineSession::class, "Shopify model must implement ProvidesOfflineSessions");
+
+        $session = $shopifyOrDomain->offlineSession();
+        if (!$session) {
+            return false;
+        }
+
+        $sessionData = SessionData::merge(null, $session);
+
+        app()->instance(OfflineSessionData::class, $session);
+
+        event(new OfflineSessionLoaded($session));
+        event(new ShopifyTenantLoaded($shopifyOrDomain));
+        event(new SessionAuthenticated($sessionData));
+
+        return true;
     }
 }

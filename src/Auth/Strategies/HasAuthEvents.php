@@ -10,6 +10,9 @@ use CashDash\Zaar\Events\OfflineSessionLoaded;
 use CashDash\Zaar\Events\OnlineSessionLoaded;
 use CashDash\Zaar\Events\SessionAuthenticated;
 use CashDash\Zaar\Events\ShopifyTenantLoaded;
+use CashDash\Zaar\SessionType;
+use CashDash\Zaar\Zaar;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
 trait HasAuthEvents
@@ -23,6 +26,20 @@ trait HasAuthEvents
     private ?SessionData $sessionData = null;
 
     private ?string $domain = null;
+
+    public function run(?Authenticatable $user): ?Authenticatable
+    {
+        return $this
+            ->withOnlineSession($user)
+            ->withUser()
+            ->withDomain()
+            ->when(Zaar::sessionType() === SessionType::OFFLINE, fn (AuthFlow $auth) => $auth->withOfflineSession())
+            ->mergeSessions()
+            ->bindData()
+            ->withShopifyModel()
+            ->dispatchEvents()
+            ->getUser();
+    }
 
     public function bindData(): AuthFlow
     {

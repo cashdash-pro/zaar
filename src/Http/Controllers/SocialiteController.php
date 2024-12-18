@@ -73,6 +73,8 @@ class SocialiteController
 
             $this->shopifySessionsRepository->createOnline($onlineSessionData);
 
+            app()->instance(OnlineSessionData::class, $onlineSessionData);
+
             event(new ShopifyOnlineSessionCreated($onlineSessionData));
 
             $user = $this->userRepository->find($onlineSessionData->user_id);
@@ -96,6 +98,8 @@ class SocialiteController
                 $response->accessTokenResponseBody);
 
             $this->shopifySessionsRepository->createOffline($offlineSessionData);
+
+            app()->instance(OfflineSessionData::class, $offlineSessionData);
 
             event(new ShopifyOfflineSessionCreated($offlineSessionData));
 

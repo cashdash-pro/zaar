@@ -50,16 +50,6 @@ class ExchangeForSessionData
     {
         $json = $this->post($bearer_token, $sessionToken, false);
 
-        return OfflineSessionData::fromTokenResponse($domain, $json);
-
-        return new OfflineSessionData(
-            id: $sessionToken->dest.'_offline',
-            shop: $sessionToken->dest,
-            state: 'token_exchange',
-            is_online: false,
-            scope: $json['scope'] ?? null,
-            expires_at: null,
-            access_token: $json['access_token'],
-        );
+        return OfflineSessionData::fromTokenResponse($sessionToken->dest, $json);
     }
 }

@@ -3,11 +3,12 @@
 namespace CashDash\Zaar\Contracts;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Http\Request;
 
 interface AuthFlow
 {
-    public function withOnlineSession(Request $request, ?Authenticatable $user): self;
+    public function run(?Authenticatable $user): ?Authenticatable;
+
+    public function withOnlineSession(?Authenticatable $user): self;
 
     public function withUser(): self;
 

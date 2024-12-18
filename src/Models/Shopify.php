@@ -2,13 +2,16 @@
 
 namespace CashDash\Zaar\Models;
 
+use CashDash\Zaar\Concerns\HasOfflineSessions;
+use CashDash\Zaar\Contracts\ProvidesOfflineSession;
 use CashDash\Zaar\Contracts\ProvidesShopify;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Model;
 
-class Shopify extends Model implements ProvidesShopify
+class Shopify extends Model implements ProvidesShopify, ProvidesOfflineSession
 {
     use HasTimestamps;
+    use HasOfflineSessions;
 
     protected $fillable = [
         'shopify_id',

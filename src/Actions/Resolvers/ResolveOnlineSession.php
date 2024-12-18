@@ -3,7 +3,7 @@
 namespace CashDash\Zaar\Actions\Resolvers;
 
 use CashDash\Zaar\Concerns\Actions\AsObject;
-use CashDash\Zaar\Contracts\ProvidesShopifySessions;
+use CashDash\Zaar\Contracts\ProvidesOnlineSessions;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -13,7 +13,7 @@ class ResolveOnlineSession
 
     public function handle(?Authenticatable $user): ?OnlineSessionData
     {
-        if ($user instanceof ProvidesShopifySessions) {
+        if ($user instanceof ProvidesOnlineSessions) {
             return $user->onlineSession();
         }
 

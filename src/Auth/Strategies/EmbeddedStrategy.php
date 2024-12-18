@@ -37,7 +37,7 @@ class EmbeddedStrategy implements AuthFlow
         }
     }
 
-    public function withOnlineSession(Request $request, ?Authenticatable $user): AuthFlow
+    public function withOnlineSession( ?Authenticatable $user): AuthFlow
     {
         if (! $this->auth) {
             return $this;

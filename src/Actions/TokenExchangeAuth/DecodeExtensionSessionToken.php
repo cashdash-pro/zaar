@@ -4,7 +4,7 @@ namespace CashDash\Zaar\Actions\TokenExchangeAuth;
 
 use CashDash\Zaar\Concerns\Actions\AsFake;
 use CashDash\Zaar\Concerns\Actions\AsObject;
-use CashDash\Zaar\Dtos\SessionToken;
+use CashDash\Zaar\Dtos\PublicSessionToken;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
@@ -14,7 +14,7 @@ readonly class DecodeExtensionSessionToken
     use AsFake;
     use AsObject;
 
-    public function handle(string $bearer_token): ?SessionToken
+    public function handle(string $bearer_token): ?PublicSessionToken
     {
         $debugExceptions = [
             SignatureInvalidException::class,
@@ -32,7 +32,15 @@ readonly class DecodeExtensionSessionToken
                 new Key($secret, 'HS256')
             );
 
-            return SessionToken::parseToken($payload);
+            \Log::info('token',
+                json_decode(json_encode($payload), true)
+            );
+
+            $token = PublicSessionToken::parseToken($payload);
+
+            app()->instance(PublicSessionToken::class, $token);
+
+            return $token;
         } catch (\Throwable $exception) {
             if (in_array(get_class($exception), $debugExceptions) && ! app()->isProduction()) {
                 throw $exception;

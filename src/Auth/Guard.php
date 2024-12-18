@@ -6,10 +6,8 @@ use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeShopifySessionToken;
 use CashDash\Zaar\Actions\TokenExchangeAuth\GetTokenFromRequest;
 use CashDash\Zaar\Auth\Strategies\EmbeddedStrategy;
 use CashDash\Zaar\Auth\Strategies\ExternalStrategy;
-use CashDash\Zaar\Contracts\AuthFlow;
 use CashDash\Zaar\Dtos\SessionData;
 use CashDash\Zaar\Http\Middleware\ReauthenticateEmbeddedRequestsMiddleware;
-use CashDash\Zaar\SessionType;
 use CashDash\Zaar\Zaar;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -71,16 +69,7 @@ class Guard
         /** @var ExternalStrategy|EmbeddedStrategy $auth */
         $auth = Zaar::isEmbedded() ? app(EmbeddedStrategy::class) : app(ExternalStrategy::class);
 
-        $user = $auth
-            ->withOnlineSession($request, $user)
-            ->withUser()
-            ->withDomain()
-            ->when(Zaar::sessionType() === SessionType::OFFLINE, fn (AuthFlow $auth) => $auth->withOfflineSession())
-            ->mergeSessions()
-            ->bindData()
-            ->withShopifyModel()
-            ->dispatchEvents()
-            ->getUser();
+        $user = $auth->run($user);
 
         if (! $user) {
             // we can fix this

@@ -23,6 +23,8 @@ class ShopifyOfflineSessionCreation
 
         $this->repository->createOffline($sessionData);
 
+        app()->instance(OfflineSessionData::class, $sessionData);
+
         event(new ShopifyOfflineSessionCreated($sessionData));
 
         return $sessionData;

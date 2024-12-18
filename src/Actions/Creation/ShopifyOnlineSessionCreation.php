@@ -22,6 +22,8 @@ class ShopifyOnlineSessionCreation
 
         $this->repository->createOnline($sessionData);
 
+        app()->instance(OnlineSessionData::class, $sessionData);
+
         event(new ShopifyOnlineSessionCreated($sessionData));
 
         return $sessionData;

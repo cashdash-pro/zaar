@@ -25,7 +25,6 @@ class ShopifySession extends Model
         'shop',
         'expires_at',
         'access_token',
-        'state',
         'scope',
         'is_online',
         'first_name',

@@ -3,17 +3,17 @@
 namespace CashDash\Zaar\Auth\Strategies;
 
 use CashDash\Zaar\Contracts\AuthFlow;
-use CashDash\Zaar\Contracts\ProvidesOnlineSessions;
 use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Contracts\UserRepositoryInterface;
+use CashDash\Zaar\Dtos\PublicSessionToken;
 use CashDash\Zaar\Dtos\SessionData;
-use CashDash\Zaar\Zaar;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Traits\Conditionable;
+use Webmozart\Assert\Assert;
 
-class ExternalStrategy implements AuthFlow
+class PublicStrategy implements AuthFlow
 {
     use Conditionable;
     use HasAuthEvents;
@@ -24,6 +24,7 @@ class ExternalStrategy implements AuthFlow
 
     public function __construct(
         private Request $request,
+        private PublicSessionToken $token,
         private ShopifySessionsRepositoryInterface $sessionsRepository,
         private ShopifyRepositoryInterface $shopifyRepository,
         private UserRepositoryInterface $userRepository
@@ -31,22 +32,6 @@ class ExternalStrategy implements AuthFlow
 
     public function withOnlineSession(?Authenticatable $user): AuthFlow
     {
-        if (! $user) {
-            return $this;
-        }
-
-        if (! $user instanceof ProvidesOnlineSessions) {
-            throw new \InvalidArgumentException('The user model must implement ProvidesShopifySessions and use the HasOnlineSessions trait.');
-        }
-
-        $this->user = $user;
-        $this->onlineSession = $user->onlineSession();
-
-        if (! $this->onlineSession) {
-            // potentially redirect if there's no online session
-
-        }
-
         return $this;
     }
 
@@ -57,38 +42,14 @@ class ExternalStrategy implements AuthFlow
 
     public function withDomain(): AuthFlow
     {
-        if (! $callback = Zaar::$resolveExternalRequest) {
-            $this->resolveUsingSession();
-
-            return $this;
-        }
-
-        $this->domain = $callback($this->request);
-        if ($this->domain) {
-            // append .myshopify.com if it's not there
-            if (! str_contains($this->domain, '.')) {
-                $this->domain .= '.myshopify.com';
-            }
-        }
-
-        if (! $this->domain) {
-            // attempt to restore from session
-            $this->resolveUsingSession();
-        }
-
+        $this->domain = $this->token->dest;
         return $this;
-    }
-
-    private function resolveUsingSession(): void
-    {
-        $this->domain = $this->request->session()->get(self::SESSION_DOMAIN);
     }
 
     public function withOfflineSession(): AuthFlow
     {
-        if (! $this->domain) {
-            return $this;
-        }
+        Assert::notNull($this->domain);
+
         $this->offlineSession = $this->sessionsRepository->findOffline($this->domain);
 
         return $this;
@@ -118,7 +79,6 @@ class ExternalStrategy implements AuthFlow
 
     public function getUser(): ?Authenticatable
     {
-        //        dd($this);
         return $this->user;
     }
 

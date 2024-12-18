@@ -15,12 +15,11 @@ class OfflineSessionData
     public function __construct(
         public string $id,
         public string $shop,
-        public string $state,
         public bool $is_online,
         public ?string $scope,
         public ?CarbonImmutable $expires_at,
         #[\SensitiveParameter]
-        public ?string $access_token,
+        public string $access_token,
     ) {}
 
     public static function fromModel(ShopifySession $model): OfflineSessionData
@@ -28,7 +27,6 @@ class OfflineSessionData
         return new self(
             id: $model->id,
             shop: $model->shop,
-            state: $model->state,
             is_online: $model->is_online,
             scope: $model->scope,
             expires_at: $model->expires_at,
@@ -41,7 +39,6 @@ class OfflineSessionData
         return new OfflineSessionData(
             id: $domain.'_offline',
             shop: $domain,
-            state: 'token_exchange',
             is_online: false,
             scope: $json['scope'] ?? null,
             expires_at: null,
@@ -54,7 +51,6 @@ class OfflineSessionData
         return [
             'id' => $this->id,
             'shop' => $this->shop,
-            'state' => $this->state,
             'is_online' => $this->is_online,
             'scope' => $this->scope,
             'expires_at' => $this->expires_at,

@@ -3,6 +3,7 @@
 namespace CashDash\Zaar\Http\Middleware;
 
 use CashDash\Zaar\Actions\TokenExchangeAuth\DecodeExtensionSessionToken;
+use CashDash\Zaar\Auth\Strategies\PublicStrategy;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
@@ -22,6 +23,12 @@ class AuthenticateExtensionRequestMiddleware
         }
 
         $session = DecodeExtensionSessionToken::make()->handle($token);
+
+        abort_if($session === null, 401);
+
+        $flow = app(PublicStrategy::class);
+
+         $flow->run(null);
 
         return $next($request);
     }

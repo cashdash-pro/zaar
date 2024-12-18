@@ -11,7 +11,6 @@ return new class extends Migration
        Schema::create('shopify_sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('shop');
-            $table->string('state');
             $table->boolean('is_online');
             $table->text('scope')->nullable();
             $table->dateTime('expires_at')->nullable();
