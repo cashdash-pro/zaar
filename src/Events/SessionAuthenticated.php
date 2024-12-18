@@ -8,5 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class SessionAuthenticated
 {
-    public function __construct(public SessionData $session, Model $shopify, ?Authenticatable $user) {}
+    public function __construct(
+        public SessionData $session,
+        public Model $shopify,
+        public ?Authenticatable $user
+    ) {}
 }
