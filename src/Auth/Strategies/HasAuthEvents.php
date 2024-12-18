@@ -71,8 +71,8 @@ trait HasAuthEvents
         if ($this->shopify) {
             event(new ShopifyTenantLoaded($this->shopify));
         }
-        if ($this->sessionData) {
-            event(new SessionAuthenticated($this->sessionData));
+        if ($this->sessionData && $this->shopify) {
+            event(new SessionAuthenticated($this->sessionData, $this->shopify, $this->user));
         }
 
         return $this;

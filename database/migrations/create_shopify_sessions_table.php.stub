@@ -14,7 +14,7 @@ return new class extends Migration
             $table->boolean('is_online');
             $table->text('scope')->nullable();
             $table->dateTime('expires_at')->nullable();
-            $table->string('access_token');
+            $table->text('access_token');
 
             // online token data
             $table->bigInteger('user_id')->nullable();

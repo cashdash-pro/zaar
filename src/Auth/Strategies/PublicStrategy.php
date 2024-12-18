@@ -69,11 +69,11 @@ class PublicStrategy implements AuthFlow
 
     public function withShopifyModel(): AuthFlow
     {
-        if (! $this->domain) {
+        if (! $this->sessionData) {
             return $this;
         }
 
-        $this->shopify = $this->shopifyRepository->find($this->domain);
+        $this->shopify = $this->shopifyRepository->find($this->sessionData->shop);
 
         return $this;
     }
