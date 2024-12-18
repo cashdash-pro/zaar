@@ -180,7 +180,11 @@ class Zaar
         }
 
         event(new OfflineSessionLoaded($offline));
-        event(new SessionAuthenticated($sessionData));
+
+        $shopify = app(ShopifyRepositoryInterface::class)->find($domain);
+        Assert::notNull($shopify, 'Shopify model not found');
+
+        event(new SessionAuthenticated($sessionData, $shopify, auth()->user()));
 
         return true;
     }
@@ -204,7 +208,7 @@ class Zaar
 
         event(new OfflineSessionLoaded($session));
         event(new ShopifyTenantLoaded($shopifyOrDomain));
-        event(new SessionAuthenticated($sessionData));
+        event(new SessionAuthenticated($sessionData, $shopifyOrDomain, $user));
 
         return true;
     }
