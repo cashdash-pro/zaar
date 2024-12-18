@@ -8,10 +8,10 @@ use CashDash\Zaar\Contracts\ProvidesShopify;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Model;
 
-class Shopify extends Model implements ProvidesShopify, ProvidesOfflineSession
+class Shopify extends Model implements ProvidesOfflineSession, ProvidesShopify
 {
-    use HasTimestamps;
     use HasOfflineSessions;
+    use HasTimestamps;
 
     protected $fillable = [
         'shopify_id',

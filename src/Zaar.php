@@ -154,7 +154,7 @@ class Zaar
         $repo = app(ShopifySessionsRepositoryInterface::class);
         $repo->deleteAll($domain);
 
-        if (!app()->has(EmbeddedAuthData::class)) {
+        if (! app()->has(EmbeddedAuthData::class)) {
             return false;
         }
 
@@ -191,10 +191,10 @@ class Zaar
             $shopifyOrDomain = app(ShopifyRepositoryInterface::class)->find($shopifyOrDomain);
         }
 
-        Assert::isInstanceOf($shopifyOrDomain, ProvidesOfflineSession::class, "Shopify model must implement ProvidesOfflineSessions");
+        Assert::isInstanceOf($shopifyOrDomain, ProvidesOfflineSession::class, 'Shopify model must implement ProvidesOfflineSessions');
 
         $session = $shopifyOrDomain->offlineSession();
-        if (!$session) {
+        if (! $session) {
             return false;
         }
 
