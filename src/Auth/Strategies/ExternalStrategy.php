@@ -60,8 +60,6 @@ class ExternalStrategy implements AuthFlow
 
         if ($domain = $this->resolveDomainUsingCallback($this->domain)) {
             $this->domain = $domain;
-
-            return $this;
         }
 
         return $this;
