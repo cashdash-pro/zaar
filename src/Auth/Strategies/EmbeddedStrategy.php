@@ -85,9 +85,15 @@ class EmbeddedStrategy implements AuthFlow
             return $this;
         }
 
-        $this->offlineSession = $this->sessionsRepository->findOffline($this->auth->session_token->dest);
-        if (! $this->offlineSession) {
-            $this->offlineSession = ShopifyOfflineSessionCreation::make()->handle($this->auth);
+        $authOfflineSession = $this->sessionsRepository->findOffline($this->auth->session_token->dest);
+        if (! $authOfflineSession) {
+            $authOfflineSession = ShopifyOfflineSessionCreation::make()->handle($this->auth);
+        }
+
+        if ($this->domain === $this->auth->session_token->dest) {
+            $this->offlineSession = $authOfflineSession;
+        } else {
+            $this->offlineSession = $this->sessionsRepository->findOffline($this->domain);
         }
 
         return $this;
