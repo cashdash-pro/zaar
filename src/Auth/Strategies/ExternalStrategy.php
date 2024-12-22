@@ -56,20 +56,20 @@ class ExternalStrategy implements AuthFlow
 
     public function withDomain(): AuthFlow
     {
-        if ($domain = $this->resolveDomainUsingCallback()) {
+        $this->domain = $this->resolveUsingSession();
+
+        if ($domain = $this->resolveDomainUsingCallback($this->domain)) {
             $this->domain = $domain;
 
             return $this;
         }
 
-        $this->resolveUsingSession();
-
         return $this;
     }
 
-    private function resolveUsingSession(): void
+    private function resolveUsingSession(): ?string
     {
-        $this->domain = $this->request->session()->get(self::SESSION_DOMAIN);
+        return $this->request->session()->get(self::SESSION_DOMAIN);
     }
 
     public function withOfflineSession(): AuthFlow

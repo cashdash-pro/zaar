@@ -78,13 +78,13 @@ trait HasAuthEvents
         return $this;
     }
 
-    protected function resolveDomainUsingCallback(): ?string
+    protected function resolveDomainUsingCallback(?string $current_domain): ?string
     {
         if (! $callback = Zaar::$resolveExternalRequest) {
             return null;
         }
 
-        $domain = $callback($this->request, $this->user);
+        $domain = $callback($this->request, $this->user, $current_domain);
         if ($domain) {
             // append .myshopify.com if it's not there
             if (! str_contains($domain, '.')) {
