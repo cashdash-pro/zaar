@@ -36,6 +36,7 @@ trait HasAuthEvents
             ->withDomain()
             ->when(Zaar::sessionType() === SessionType::OFFLINE, fn (AuthFlow $auth) => $auth->withOfflineSession())
             ->mergeSessions()
+            ->withStoreImpersonation()
             ->bindData()
             ->withShopifyModel()
             ->dispatchEvents()
@@ -67,7 +68,7 @@ trait HasAuthEvents
             return $this;
         }
         /** @var ProvidesOfflineSession $shopify */
-        $shopify = $callback($this->shopify, $this->user);
+        $shopify = $callback($this->shopify, $this->user, $this->request);
 
         if ($shopify) {
             $this->shopify = $shopify;
