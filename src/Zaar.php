@@ -226,6 +226,4 @@ class Zaar
 
         return true;
     }
-
-
 }
