@@ -84,7 +84,7 @@ trait HasAuthEvents
             return null;
         }
 
-        $domain = $callback($this->request);
+        $domain = $callback($this->request, $this->user);
         if ($domain) {
             // append .myshopify.com if it's not there
             if (! str_contains($domain, '.')) {
