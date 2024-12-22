@@ -22,6 +22,8 @@ interface AuthFlow
 
     public function withShopifyModel(): self;
 
+    public function withStoreImpersonation(): self;
+
     public function bindData(): self;
 
     public function dispatchEvents(): self;

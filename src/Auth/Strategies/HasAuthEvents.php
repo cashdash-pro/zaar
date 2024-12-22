@@ -3,6 +3,7 @@
 namespace CashDash\Zaar\Auth\Strategies;
 
 use CashDash\Zaar\Contracts\AuthFlow;
+use CashDash\Zaar\Contracts\ProvidesOfflineSession;
 use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Dtos\SessionData;
@@ -56,6 +57,26 @@ trait HasAuthEvents
             return $this;
         }
         $this->request->session()->put('auth_domain', $this->domain);
+
+        return $this;
+    }
+
+    public function withStoreImpersonation(): AuthFlow
+    {
+        if (! $callback = Zaar::$shouldImpersonateShopify) {
+            return $this;
+        }
+        /** @var ProvidesOfflineSession $shopify */
+        $shopify = $callback($this->shopify, $this->user);
+
+        if ($shopify) {
+            $this->shopify = $shopify;
+            $offlineSession = $shopify->offlineSession();
+            if (! $offlineSession) {
+                abort(401, 'Impersonated store does not have an offline session');
+            }
+            $this->offlineSession = $offlineSession;
+        }
 
         return $this;
     }
