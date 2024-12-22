@@ -116,7 +116,9 @@ class EmbeddedStrategy implements AuthFlow
             return $this;
         }
 
-        $shopify = $this->shopifyRepository->find($this->sessionData->shop);
+        $shopify = $this->shopifyRepository->find($this->domain);
+
+        // I'm not sure if this is a great idea considering the session could be an impersonation
         if (! $shopify) {
             $shopify = ShopifyCreation::make()->handle($this->sessionData);
         }
