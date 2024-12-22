@@ -70,10 +70,11 @@ class EmbeddedStrategy implements AuthFlow
     {
         if ($this->auth) {
             $this->domain = $this->auth->session_token->dest;
-        }
 
-        if ($domain = $this->resolveDomainUsingCallback($this->auth?->session_token->dest)) {
-            $this->domain = $domain;
+            // We only do this when we have auth, because in dev auth can be null before it bounce redirects
+            if ($domain = $this->resolveDomainUsingCallback($this->auth->session_token->dest)) {
+                $this->domain = $domain;
+            }
         }
 
         return $this;
