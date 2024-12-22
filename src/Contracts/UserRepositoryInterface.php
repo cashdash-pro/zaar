@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 interface UserRepositoryInterface
 {
-    public function find(string|int $user_id): ?Model;
+    public function find(string $email): ?Model;
 
     public function create(OnlineSessionData $onlineSessionData);
 }

@@ -14,14 +14,14 @@ class UserRepository implements UserRepositoryInterface
         return config('zaar.repositories.user.model');
     }
 
-    private function shopifyUserIdColumn(): string
+    private function emailColumn(): string
     {
-        return config('zaar.repositories.user.shopify_user_id_column', 'shopify_user_id');
+        return config('zaar.repositories.user.email_column', 'email');
     }
 
-    public function find(string|int $user_id): ?Model
+    public function find(string $email): ?Model
     {
-        return $this->model()::where($this->shopifyUserIdColumn(), $user_id)->first();
+        return $this->model()::where($this->emailColumn(), $email)->first();
     }
 
     public function create(OnlineSessionData $onlineSessionData)
@@ -41,11 +41,6 @@ class UserRepository implements UserRepositoryInterface
                 'email_verified_at' => $onlineSessionData->email_verified ? now() : null,
             ]
         );
-
-        if (! $this->shopifyUserIdColumn()) {
-            $user->{$this->shopifyUserIdColumn()} = $onlineSessionData->user_id;
-            $user->save();
-        }
 
         return $user;
     }

@@ -15,7 +15,7 @@ interface ShopifySessionsRepositoryInterface
 
     public function createOffline(OfflineSessionData $sessionData): void;
 
-    public function onlineSessionFor(int $shopifyUserId): ?OnlineSessionData;
+    public function onlineSessionFor(string $email): ?OnlineSessionData;
 
     public function deleteAll(string $domain): void;
 }

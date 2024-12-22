@@ -77,7 +77,7 @@ class SocialiteController
 
             event(new ShopifyOnlineSessionCreated($onlineSessionData));
 
-            $user = $this->userRepository->find($onlineSessionData->user_id);
+            $user = $this->userRepository->find($onlineSessionData->email);
             if (! $user) {
                 $user = UserCreation::make()->handle($onlineSessionData);
             }

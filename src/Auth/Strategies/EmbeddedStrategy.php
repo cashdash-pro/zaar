@@ -57,7 +57,7 @@ class EmbeddedStrategy implements AuthFlow
             return $this;
         }
 
-        $user = $this->userRepository->find($this->onlineSession->user_id);
+        $user = $this->userRepository->find($this->onlineSession->email);
         if (! $user) {
             $user = UserCreation::make()->handle($this->onlineSession);
         }
