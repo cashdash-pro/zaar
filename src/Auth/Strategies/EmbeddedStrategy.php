@@ -72,6 +72,10 @@ class EmbeddedStrategy implements AuthFlow
             $this->domain = $this->auth->session_token->dest;
         }
 
+        if ($domain = $this->resolveDomainUsingCallback()) {
+            $this->domain = $domain;
+        }
+
         return $this;
     }
 

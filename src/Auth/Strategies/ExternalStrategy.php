@@ -8,7 +8,6 @@ use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Contracts\UserRepositoryInterface;
 use CashDash\Zaar\Dtos\SessionData;
-use CashDash\Zaar\Zaar;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Traits\Conditionable;
@@ -55,26 +54,16 @@ class ExternalStrategy implements AuthFlow
         return $this;
     }
 
+
+
     public function withDomain(): AuthFlow
     {
-        if (! $callback = Zaar::$resolveExternalRequest) {
-            $this->resolveUsingSession();
-
+        if ($domain = $this->resolveDomainUsingCallback()) {
+            $this->domain = $domain;
             return $this;
         }
 
-        $this->domain = $callback($this->request);
-        if ($this->domain) {
-            // append .myshopify.com if it's not there
-            if (! str_contains($this->domain, '.')) {
-                $this->domain .= '.myshopify.com';
-            }
-        }
-
-        if (! $this->domain) {
-            // attempt to restore from session
-            $this->resolveUsingSession();
-        }
+        $this->resolveUsingSession();
 
         return $this;
     }

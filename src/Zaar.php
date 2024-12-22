@@ -43,11 +43,6 @@ class Zaar
     public static $createShopifyCallback = null;
 
     /**
-     * @var null|callable
-     */
-    public static $shouldImpersonateShopify = null;
-
-    /**
      * Supply a callback that takes an OnlineSessionData object and returns a user object.
      */
     public static function createUserUsing(callable $callback): void
@@ -72,25 +67,18 @@ class Zaar
         self::$findUserCallback = $callback;
     }
 
-    public static function resolveExternalRequestsUsing(callable $callback): void
+    public static function setShopifyDomain(callable $callback): void
     {
-        //         Zaar::resolveExternalRequestsUsing(function (Request $request) {
+        //         Zaar::resolveExternalRequestsUsing(function (Request $request, User $user) {
         // you can use the request to determine the shop domain
         // i.e. return $request->get('shop');
         // i.e return $request->header('x-shopify-shop-domain');
         // i.e return $request->route('shop');
         //         });
 
+        // you'll also get given the user if you want to do store impersonation (aka check they can access first)
+
         self::$resolveExternalRequest = $callback;
-    }
-
-    public static function shouldImpersonateShopify(callable $callback): void
-    {
-        // here you'll get given the user, shopify and request
-        // you can return a different shopify that implements ProvidesOfflineSession
-        // that will be used to start the session
-
-        self::$shouldImpersonateShopify = $callback;
     }
 
     public static function sessionType(): SessionType

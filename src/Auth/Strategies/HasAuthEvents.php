@@ -3,7 +3,6 @@
 namespace CashDash\Zaar\Auth\Strategies;
 
 use CashDash\Zaar\Contracts\AuthFlow;
-use CashDash\Zaar\Contracts\ProvidesOfflineSession;
 use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Dtos\SessionData;
@@ -35,7 +34,6 @@ trait HasAuthEvents
             ->withUser()
             ->withDomain()
             ->when(Zaar::sessionType() === SessionType::OFFLINE, fn (AuthFlow $auth) => $auth->withOfflineSession())
-            ->withStoreImpersonation()
             ->mergeSessions()
             ->bindData()
             ->withShopifyModel()
@@ -62,26 +60,6 @@ trait HasAuthEvents
         return $this;
     }
 
-    public function withStoreImpersonation(): AuthFlow
-    {
-        if (! $callback = Zaar::$shouldImpersonateShopify) {
-            return $this;
-        }
-        /** @var ProvidesOfflineSession $shopify */
-        $shopify = $callback($this->shopify, $this->user, $this->request);
-
-        if ($shopify) {
-            $this->shopify = $shopify;
-            $offlineSession = $shopify->offlineSession();
-            if (! $offlineSession) {
-                abort(401, 'Impersonated store does not have an offline session');
-            }
-            $this->offlineSession = $offlineSession;
-        }
-
-        return $this;
-    }
-
     public function dispatchEvents(): AuthFlow
     {
         if ($this->onlineSession) {
@@ -98,5 +76,22 @@ trait HasAuthEvents
         }
 
         return $this;
+    }
+
+    protected function resolveDomainUsingCallback(): ?string
+    {
+        if (! $callback = Zaar::$resolveExternalRequest) {
+            return null;
+        }
+
+        $domain = $callback($this->request);
+        if ($domain) {
+            // append .myshopify.com if it's not there
+            if (! str_contains($domain, '.')) {
+                $domain .= '.myshopify.com';
+            }
+        }
+
+        return $domain;
     }
 }
