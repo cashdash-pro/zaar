@@ -51,10 +51,10 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
         return $session?->toData();
     }
 
-    public function onlineSessionFor(int $shopifyUserId): ?OnlineSessionData
+    public function onlineSessionFor(string $email): ?OnlineSessionData
     {
         return $this->model()::query()
-            ->where('user_id', $shopifyUserId)
+            ->where(config('zaar.repositories.user.email_column', 'email'), $email)
             ->latest()
             ->first()
             ?->toData();

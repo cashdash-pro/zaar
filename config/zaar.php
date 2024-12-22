@@ -52,7 +52,7 @@ return [
         'user' => [
             'type' => CashDash\Zaar\Repositories\UserRepository::class,
             'model' => \App\Models\User::class,
-            'shopify_user_id_column' => 'shopify_user_id',
+            'email_column' => 'email',
         ],
 
         'shopify' => [

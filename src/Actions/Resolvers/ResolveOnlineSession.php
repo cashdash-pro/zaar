@@ -14,7 +14,7 @@ class ResolveOnlineSession
     public function handle(?Authenticatable $user): ?OnlineSessionData
     {
         if ($user instanceof ProvidesOnlineSessions) {
-            return $user->onlineSession();
+            return $user->onlineSessions();
         }
 
         // TODO: support more resolvers?

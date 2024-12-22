@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-
 use function Laravel\Prompts\select;
 
 class ZaarServiceProvider extends PackageServiceProvider
@@ -31,7 +30,6 @@ class ZaarServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_shopifies_table',
                 'create_shopify_sessions_table',
-                'add_shopify_user_id_to_users_table',
             ])
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command

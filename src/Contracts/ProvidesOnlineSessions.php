@@ -6,5 +6,5 @@ use CashDash\Zaar\Dtos\OnlineSessionData;
 
 interface ProvidesOnlineSessions
 {
-    public function onlineSession(): ?OnlineSessionData;
+    public function onlineSessions(): ?OnlineSessionData;
 }
