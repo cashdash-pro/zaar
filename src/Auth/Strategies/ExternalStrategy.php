@@ -22,10 +22,10 @@ class ExternalStrategy implements AuthFlow
     public const SESSION_DOMAIN = 'auth_domain';
 
     public function __construct(
-        private Request $request,
-        private ShopifySessionsRepositoryInterface $sessionsRepository,
-        private ShopifyRepositoryInterface $shopifyRepository,
-        private UserRepositoryInterface $userRepository
+        private readonly Request $request,
+        private readonly ShopifySessionsRepositoryInterface $sessionsRepository,
+        private readonly ShopifyRepositoryInterface $shopifyRepository,
+        private readonly UserRepositoryInterface $userRepository
     ) {}
 
     public function withOnlineSession(?Authenticatable $user): AuthFlow

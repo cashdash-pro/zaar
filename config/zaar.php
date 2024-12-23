@@ -1,6 +1,18 @@
 <?php
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Shopify App Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This section contains the core configuration for your Shopify app.
+    | It includes API credentials, version settings, and session management.
+    | The session_type can be either 'online' or 'offline':
+    | - online: Requires user authentication for each session
+    | - offline: Persists authentication across sessions
+    |
+    */
     'shopify_app' => [
         'client_id' => env('SHOPIFY_CLIENT_ID'),
         'client_secret' => env('SHOPIFY_CLIENT_SECRET'),
@@ -13,19 +25,79 @@ return [
         'session_type' => env('SHOPIFY_SESSION_TYPE', \CashDash\Zaar\SessionType::OFFLINE),
     ],
 
-    'guards' => 'web',
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Guards
+    |--------------------------------------------------------------------------
+    |
+    | Specify the authentication guards that will be used for Shopify auth.
+    | By default, this uses the 'web' guard. For non-embedded apps, that
+    | means your users will authenticate like normal. Additionally, you can
+    | add other guards like 'sanctum' if you need to.
+    |
+    */
+    'guards' => ['web'],
 
+    /*
+    |--------------------------------------------------------------------------
+    | HTTPS for Embedded Apps
+    |--------------------------------------------------------------------------
+    |
+    | Force HTTPS for embedded apps. This is required for Shopify's App Bridge
+    | to function properly in embedded mode.
+    |
+    */
     'force_embedded_https' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Socialite Integration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for Laravel Socialite integration with Shopify.
+    | When enabled, this allows OAuth-based authentication flow.
+    | You'll need to provide the redirect route for the OAuth flow,
+    | but Zaar will handle the rest.
+    |
+    */
     'socialite' => [
         'enabled' => false,
         'home_route' => 'dashboard',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF Protection
+    |--------------------------------------------------------------------------
+    |
+    | Routes that should be excluded from CSRF verification (embedded apps)
+    | The default '*' excludes all routes - modify as needed for security.
+    |
+    */
     'disabled_csrf_routes' => ['*'],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Session Repository
+    |--------------------------------------------------------------------------
+    |
+    | The default repository type for storing Shopify sessions.
+    | Supports 'database' storage out of the box.
+    |
+    */
     'default_session_repository' => 'database',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Middleware Groups
+    |--------------------------------------------------------------------------
+    |
+    | Define middleware groups for different types of Shopify requests:
+    | - shopify: Loads the Shopify auth guard
+    | - shopify:web: Full web middleware stack with embedded app support
+    | - shopify:public: For public/extension endpoints
+    |
+    */
     'middleware' => [
         'shopify' => [
             'auth:shopify',
@@ -46,8 +118,18 @@ return [
     ],
 
     /*
-     * Data will be stored and loaded from these repositories.
-     */
+    |--------------------------------------------------------------------------
+    | Data Repositories
+    |--------------------------------------------------------------------------
+    |
+    | Configure the repositories used for storing different types of data:
+    | - user: For managing user data and authentication
+    | - shopify: For store/shop related data
+    | - sessions: For managing Shopify API sessions
+    |
+    | Each repository can be customized with its own model and configuration.
+    |
+    */
     'repositories' => [
         'user' => [
             'type' => CashDash\Zaar\Repositories\UserRepository::class,
