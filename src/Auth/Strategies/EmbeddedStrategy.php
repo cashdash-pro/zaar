@@ -27,9 +27,9 @@ class EmbeddedStrategy implements AuthFlow
     private ?EmbeddedAuthData $auth = null;
 
     public function __construct(
-        private readonly Request                            $request,
+        private readonly Request $request,
         private readonly ShopifySessionsRepositoryInterface $sessionsRepository,
-        private readonly ShopifyRepositoryInterface         $shopifyRepository,
+        private readonly ShopifyRepositoryInterface $shopifyRepository,
         private readonly UserRepositoryInterface $userRepository
     ) {
         if (app()->has(EmbeddedAuthData::class)) {

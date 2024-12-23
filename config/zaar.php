@@ -31,7 +31,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Specify the authentication guards that will be used for Shopify auth.
-    | By default, this uses the 'web' guard. For non-embedded apps, that 
+    | By default, this uses the 'web' guard. For non-embedded apps, that
     | means your users will authenticate like normal. Additionally, you can
     | add other guards like 'sanctum' if you need to.
     |
@@ -44,7 +44,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Force HTTPS for embedded apps. This is required for Shopify's App Bridge
-    | to function properly in embedded mode. 
+    | to function properly in embedded mode.
     |
     */
     'force_embedded_https' => true,
@@ -55,7 +55,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Configuration for Laravel Socialite integration with Shopify.
-    | When enabled, this allows OAuth-based authentication flow. 
+    | When enabled, this allows OAuth-based authentication flow.
     | You'll need to provide the redirect route for the OAuth flow,
     | but Zaar will handle the rest.
     |
