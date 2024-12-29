@@ -17,6 +17,7 @@ use CashDash\Zaar\Events\OfflineSessionLoaded;
 use CashDash\Zaar\Events\OnlineSessionLoaded;
 use CashDash\Zaar\Events\SessionAuthenticated;
 use CashDash\Zaar\Events\ShopifyTenantLoaded;
+use CashDash\Zaar\Exceptions\ShopifyNotFoundException;
 use CashDash\Zaar\Exceptions\ShopifySessionNotStartedException;
 use Webmozart\Assert\Assert;
 
@@ -204,6 +205,9 @@ class Zaar
         return true;
     }
 
+    /**
+     * @throws ShopifyNotFoundException
+     */
     public static function startSessionManually(
         ProvidesOfflineSession|string $shopifyOrDomain,
         ?ProvidesOnlineSessions $user = null
@@ -214,11 +218,8 @@ class Zaar
                 $shopifyOrDomain
             );
 
-            throw_if(
-                ! $shopifyOrDomain,
-                new \InvalidArgumentException(
-                    'Shopify not found for domain'.$domain
-                )
+            throw new ShopifyNotFoundException(
+                "Shopify model not found for domain: $domain"
             );
         }
 
