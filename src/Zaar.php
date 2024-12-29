@@ -209,13 +209,16 @@ class Zaar
         ?ProvidesOnlineSessions $user = null
     ): bool {
         if (is_string($shopifyOrDomain)) {
+            $domain = $shopifyOrDomain;
             $shopifyOrDomain = app(ShopifyRepositoryInterface::class)->find(
                 $shopifyOrDomain
             );
 
             throw_if(
                 ! $shopifyOrDomain,
-                new \InvalidArgumentException('Shopify not found')
+                new \InvalidArgumentException(
+                    'Shopify not found for domain'.$domain
+                )
             );
         }
 
