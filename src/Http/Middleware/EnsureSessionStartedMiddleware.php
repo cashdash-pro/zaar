@@ -16,8 +16,6 @@ class EnsureSessionStartedMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        Assert::notNull(auth()->check(), 'Session Guard should be used after the Auth middleware');
-
         if (! Zaar::sessionStarted()) {
             // if there's no session, this means there was likely no way to determine the shop domain
             //redirect to shop selection page

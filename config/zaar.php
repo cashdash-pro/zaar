@@ -114,6 +114,7 @@ return [
         ],
         'shopify:public' => [
             \CashDash\Zaar\Http\Middleware\AuthenticateExtensionRequestMiddleware::class,
+            \CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware::class,
         ],
     ],
 
