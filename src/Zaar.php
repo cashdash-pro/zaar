@@ -84,7 +84,7 @@ class Zaar
 
     public static function sessionType(): SessionType
     {
-        return config("zaar.shopify_app.session_type");
+        return config('zaar.shopify_app.session_type');
     }
 
     public static function session(): ?SessionData
@@ -106,13 +106,13 @@ class Zaar
     {
         if (self::sessionType() === SessionType::ONLINE) {
             throw new \InvalidArgumentException(
-                "You have not configured your app to use offline sessions"
+                'You have not configured your app to use offline sessions'
             );
         }
 
-        if (!app()->has(OfflineSessionData::class)) {
+        if (! app()->has(OfflineSessionData::class)) {
             throw new ShopifySessionNotStartedException(
-                "No shopify session has been resolved for this request"
+                'No shopify session has been resolved for this request'
             );
         }
 
@@ -124,9 +124,9 @@ class Zaar
      */
     public static function onlineSession(): OnlineSessionData
     {
-        if (!app()->has(OnlineSessionData::class)) {
+        if (! app()->has(OnlineSessionData::class)) {
             throw new ShopifySessionNotStartedException(
-                "An online session has not been loaded"
+                'An online session has not been loaded'
             );
         }
 
@@ -151,13 +151,13 @@ class Zaar
             return true;
         }
 
-        if (request()->query("embedded") === "1") {
+        if (request()->query('embedded') === '1') {
             return true;
         }
 
         if (
-            request()->header("sec-fetch-dest") === "iframe" &&
-            request()->header("sec-fetch-mode") === "navigate"
+            request()->header('sec-fetch-dest') === 'iframe' &&
+            request()->header('sec-fetch-mode') === 'navigate'
         ) {
             return true;
         }
@@ -170,7 +170,7 @@ class Zaar
         $repo = app(ShopifySessionsRepositoryInterface::class);
         $repo->deleteAll($domain);
 
-        if (!app()->has(EmbeddedAuthData::class)) {
+        if (! app()->has(EmbeddedAuthData::class)) {
             return false;
         }
 
@@ -198,7 +198,7 @@ class Zaar
         event(new OfflineSessionLoaded($offline));
 
         $shopify = app(ShopifyRepositoryInterface::class)->find($domain);
-        Assert::notNull($shopify, "Shopify model not found");
+        Assert::notNull($shopify, 'Shopify model not found');
 
         event(new SessionAuthenticated($sessionData, $shopify, auth()->user()));
 
@@ -218,7 +218,7 @@ class Zaar
                 $shopifyOrDomain
             );
 
-            if (!$shopifyOrDomain) {
+            if (! $shopifyOrDomain) {
                 throw new ShopifyNotFoundException(
                     "Shopify model not found for domain: $domain"
                 );
@@ -228,11 +228,11 @@ class Zaar
         Assert::isInstanceOf(
             $shopifyOrDomain,
             ProvidesOfflineSession::class,
-            "Shopify model must implement ProvidesOfflineSessions"
+            'Shopify model must implement ProvidesOfflineSessions'
         );
 
         $session = $shopifyOrDomain->offlineSession();
-        if (!$session) {
+        if (! $session) {
             return false;
         }
 
