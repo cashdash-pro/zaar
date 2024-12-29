@@ -88,8 +88,12 @@ class Zaar
 
     public static function session(): ?SessionData
     {
-        $online = app()->has(OnlineSessionData::class) ? app(OnlineSessionData::class) : null;
-        $offline = app()->has(OfflineSessionData::class) ? app(OfflineSessionData::class) : null;
+        $online = app()->has(OnlineSessionData::class)
+            ? app(OnlineSessionData::class)
+            : null;
+        $offline = app()->has(OfflineSessionData::class)
+            ? app(OfflineSessionData::class)
+            : null;
 
         return SessionData::merge($online, $offline);
     }
@@ -100,11 +104,15 @@ class Zaar
     public static function offlineSession(): OfflineSessionData
     {
         if (self::sessionType() === SessionType::ONLINE) {
-            throw new \InvalidArgumentException('You have not configured your app to use offline sessions');
+            throw new \InvalidArgumentException(
+                'You have not configured your app to use offline sessions'
+            );
         }
 
         if (! app()->has(OfflineSessionData::class)) {
-            throw new ShopifySessionNotStartedException('No shopify session has been resolved for this request');
+            throw new ShopifySessionNotStartedException(
+                'No shopify session has been resolved for this request'
+            );
         }
 
         return app(OfflineSessionData::class);
@@ -116,7 +124,9 @@ class Zaar
     public static function onlineSession(): OnlineSessionData
     {
         if (! app()->has(OnlineSessionData::class)) {
-            throw new ShopifySessionNotStartedException('An online session has not been loaded');
+            throw new ShopifySessionNotStartedException(
+                'An online session has not been loaded'
+            );
         }
 
         return app(OnlineSessionData::class);
@@ -124,7 +134,8 @@ class Zaar
 
     public static function sessionStarted(): bool
     {
-        return app()->has(OnlineSessionData::class) || app()->has(OfflineSessionData::class);
+        return app()->has(OnlineSessionData::class) ||
+            app()->has(OfflineSessionData::class);
     }
 
     public static function isEmbedded(): bool
@@ -143,8 +154,10 @@ class Zaar
             return true;
         }
 
-        if (request()->header('sec-fetch-dest') === 'iframe'
-            && request()->header('sec-fetch-mode') === 'navigate') {
+        if (
+            request()->header('sec-fetch-dest') === 'iframe' &&
+            request()->header('sec-fetch-mode') === 'navigate'
+        ) {
             return true;
         }
 
@@ -191,13 +204,26 @@ class Zaar
         return true;
     }
 
-    public static function startSessionManually(ProvidesOfflineSession|string $shopifyOrDomain, ?ProvidesOnlineSessions $user = null): bool
-    {
+    public static function startSessionManually(
+        ProvidesOfflineSession|string $shopifyOrDomain,
+        ?ProvidesOnlineSessions $user = null
+    ): bool {
         if (is_string($shopifyOrDomain)) {
-            $shopifyOrDomain = app(ShopifyRepositoryInterface::class)->find($shopifyOrDomain);
+            $shopifyOrDomain = app(ShopifyRepositoryInterface::class)->find(
+                $shopifyOrDomain
+            );
+
+            throw_if(
+                ! $shopifyOrDomain,
+                new \InvalidArgumentException('Shopify not found')
+            );
         }
 
-        Assert::isInstanceOf($shopifyOrDomain, ProvidesOfflineSession::class, 'Shopify model must implement ProvidesOfflineSessions');
+        Assert::isInstanceOf(
+            $shopifyOrDomain,
+            ProvidesOfflineSession::class,
+            'Shopify model must implement ProvidesOfflineSessions'
+        );
 
         $session = $shopifyOrDomain->offlineSession();
         if (! $session) {
