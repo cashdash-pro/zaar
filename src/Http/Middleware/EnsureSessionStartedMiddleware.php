@@ -7,7 +7,6 @@ use CashDash\Zaar\SessionType;
 use CashDash\Zaar\Zaar;
 use Closure;
 use Illuminate\Http\Request;
-use Webmozart\Assert\Assert;
 
 class EnsureSessionStartedMiddleware
 {
