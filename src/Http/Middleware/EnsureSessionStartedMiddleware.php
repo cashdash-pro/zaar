@@ -22,13 +22,6 @@ class EnsureSessionStartedMiddleware
 
             abort(403, 'Session could not be started. Please make sure the shop domain is set.');
         }
-
-        // we'd probably want to enforce the
-        Zaar::onlineSession();
-        if (config('zaar.shopify_app.session_type') !== SessionType::ONLINE) {
-            Zaar::offlineSession();
-        }
-
         return $next($request);
     }
 }
