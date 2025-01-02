@@ -16,8 +16,12 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
         return config('zaar.repositories.sessions.database.model');
     }
 
-    public function findOnline(string $session_id): ?OnlineSessionData
+    public function findOnline(?string $session_id): ?OnlineSessionData
     {
+        if (! $session_id) {
+            return null;
+        }
+
         return $this->model()::query()
             ->where('is_online', true)
             ->where('id', $session_id)
@@ -41,8 +45,12 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
         );
     }
 
-    public function findOffline(string $domain): ?OfflineSessionData
+    public function findOffline(?string $domain): ?OfflineSessionData
     {
+        if (! $domain) {
+            return null;
+        }
+
         $session = $this->model()::query()
             ->where('is_online', false)
             ->where('shop', $domain)
@@ -51,8 +59,12 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
         return $session?->toData();
     }
 
-    public function onlineSessionFor(string $email): ?OnlineSessionData
+    public function onlineSessionFor(?string $email): ?OnlineSessionData
     {
+        if (! $email) {
+            return null;
+        }
+
         return $this->model()::query()
             ->where(config('zaar.repositories.user.email_column', 'email'), $email)
             ->latest()
@@ -60,8 +72,12 @@ class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
             ?->toData();
     }
 
-    public function deleteAll(string $domain): void
+    public function deleteAll(?string $domain): void
     {
+        if (! $domain) {
+            return;
+        }
+
         $this->model()::query()
             ->where('shop', $domain)
             ->delete();

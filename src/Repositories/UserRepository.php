@@ -19,8 +19,12 @@ class UserRepository implements UserRepositoryInterface
         return config('zaar.repositories.user.email_column', 'email');
     }
 
-    public function find(string $email): ?Model
+    public function find(?string $email): ?Model
     {
+        if (! $email) {
+            return null;
+        }
+
         return $this->model()::where($this->emailColumn(), $email)->first();
     }
 
