@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.0.5 - 2025-01-02
+
+Fix ensure sessions
+
 ## v0.5.1 - 2024-12-18
 
 **Full Changelog**: https://github.com/cashdash-pro/zaar/compare/v0.5...v0.5.1
