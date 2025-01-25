@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.0.7 - 2025-01-25
+
+Loosen laravel prompts requirements
+
 ## 1.0.6 - 2025-01-02
 
 Make the repositories more lenient/nullable when finding
