@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.0.6 - 2025-01-02
+
+Make the repositories more lenient/nullable when finding
+
 ## 1.0.5 - 2025-01-02
 
 Fix ensure sessions
