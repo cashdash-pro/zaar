@@ -43,9 +43,9 @@ trait HasAuthEvents
 
     public function bindData(): AuthFlow
     {
-        app()->instance(OnlineSessionData::class, $this->onlineSession);
-        app()->instance(OfflineSessionData::class, $this->offlineSession);
-        app()->instance(SessionData::class, $this->sessionData);
+        app()->scoped(OnlineSessionData::class, fn() => $this->onlineSession);
+        app()->scoped(OfflineSessionData::class, fn() => $this->offlineSession);
+        app()->scoped(SessionData::class, fn() => $this->sessionData);
 
         return $this;
     }

@@ -61,7 +61,7 @@ class ZaarServiceProvider extends PackageServiceProvider
             URL::forceScheme('https');
         }
 
-        $this->app->singleton('session', function ($app) {
+        $this->app->bind('session', function ($app) {
             return new CustomSessionManager($app);
         });
 
