@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.0.8 - 2025-02-25
+
+octane compatibility
+
 ## 1.0.7 - 2025-01-25
 
 Loosen laravel prompts requirements
