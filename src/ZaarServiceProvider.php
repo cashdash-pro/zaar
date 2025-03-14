@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Illuminate\Support\Facades\Event;
 
 use function Laravel\Prompts\select;
 
@@ -245,7 +246,7 @@ CODE;
 
     private function registerSocialite()
     {
-        \Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('shopify', \SocialiteProviders\Shopify\Provider::class);
         });
     }
