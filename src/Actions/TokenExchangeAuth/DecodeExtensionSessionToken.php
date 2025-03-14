@@ -32,10 +32,6 @@ readonly class DecodeExtensionSessionToken
                 new Key($secret, 'HS256')
             );
 
-            \Log::info('token',
-                json_decode(json_encode($payload), true)
-            );
-
             $token = PublicSessionToken::parseToken($payload);
 
             app()->instance(PublicSessionToken::class, $token);

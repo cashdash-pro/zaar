@@ -28,11 +28,7 @@ class ShopifyRedisSessionHandler extends CacheBasedSessionHandler
     public function read($sessionId): string
     {
         if ($auth = $this->getToken()) {
-            \Log::emergency('auth found'.$auth->sub);
-
             return $this->cache->get($auth->sub);
-        } else {
-            \Log::emergency('no auth found');
         }
 
         return $this->cache->get($sessionId);
@@ -42,7 +38,6 @@ class ShopifyRedisSessionHandler extends CacheBasedSessionHandler
     {
         if ($auth = $this->getToken()) {
             return $this->cache->put($auth->sub, $data);
-        } else {
         }
 
         return $this->cache->put($sessionId, $data);
