@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class SwapSessionStore
 {
-  
     public function handle(Request $request, Closure $next)
     {
         if (! Zaar::sessionStarted()) {
@@ -20,4 +19,3 @@ class SwapSessionStore
         return $next($request);
     }
 }
-

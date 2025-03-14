@@ -14,14 +14,13 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Session\CacheBasedSessionHandler;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 use function Laravel\Prompts\select;
 
@@ -68,6 +67,7 @@ class ZaarServiceProvider extends PackageServiceProvider
         Session::extend('shopify', function (Application $app) {
             $cache = $app->make('cache')->store(config('cache.default'));
             $ttl = config('session.lifetime');
+
             return new ShopifyRedisSessionHandler($cache, $ttl);
         });
 
