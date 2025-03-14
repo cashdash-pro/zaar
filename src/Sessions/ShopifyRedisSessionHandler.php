@@ -28,10 +28,10 @@ class ShopifyRedisSessionHandler extends CacheBasedSessionHandler
     public function read($sessionId): string
     {
         if ($auth = $this->getToken()) {
-            return $this->cache->get($auth->sub);
+            return $this->cache->get($auth->sub, '');
         }
 
-        return $this->cache->get($sessionId);
+        return $this->cache->get($sessionId, '');
     }
 
     public function write($sessionId, $data): bool
