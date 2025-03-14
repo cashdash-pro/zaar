@@ -108,6 +108,7 @@ return [
             \CashDash\Zaar\Http\Middleware\AddParamsToRedirectMiddleware::class,
             \CashDash\Zaar\Http\Middleware\AddEmbeddedCspHeaderMiddleware::class,
             \CashDash\Zaar\Http\Middleware\ReauthenticateEmbeddedRequestsMiddleware::class,
+            \CashDash\Zaar\Http\Middleware\SwapSessionStore::class,
             'web',
             'auth:shopify',
             \CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware::class,

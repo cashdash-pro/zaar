@@ -8,12 +8,15 @@ use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Contracts\UserRepositoryInterface;
 use CashDash\Zaar\Http\Middleware\RemoveCookiesMiddleware;
-use CashDash\Zaar\Sessions\CustomSessionManager;
+use CashDash\Zaar\Sessions\ShopifyRedisSessionHandler;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Auth\Factory;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Session\CacheBasedSessionHandler;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -62,8 +65,10 @@ class ZaarServiceProvider extends PackageServiceProvider
             URL::forceScheme('https');
         }
 
-        $this->app->bind('session', function ($app) {
-            return new CustomSessionManager($app);
+        Session::extend('shopify', function (Application $app) {
+            $cache = $app->make('cache')->store(config('cache.default'));
+            $ttl = config('session.lifetime');
+            return new ShopifyRedisSessionHandler($cache, $ttl);
         });
 
         $this->configureGuard();
