@@ -71,6 +71,10 @@ class ZaarServiceProvider extends PackageServiceProvider
             return new ShopifyRedisSessionHandler($cache, $ttl);
         });
 
+        if (Zaar::isEmbedded()) {
+            config(['session.driver' => 'shopify']);
+        }
+
         $this->configureGuard();
         $this->disableCsrfForPackageRoutes();
         $this->registerBladeDirectives();
@@ -89,6 +93,7 @@ class ZaarServiceProvider extends PackageServiceProvider
             $this->app['router']->middlewareGroup('shopify.public', config('zaar.middleware.shopify:public'));
 
             $this->app['router']->prependMiddlewareToGroup('web', RemoveCookiesMiddleware::class);
+
             $this->app['router']->middleware(RemoveCookiesMiddleware::class);
             //            $this->app['router']->prependMiddlewareToGroup($group, $middleware)
         });
