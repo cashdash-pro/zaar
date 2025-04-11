@@ -7,7 +7,7 @@ use CashDash\Zaar\Dtos\OnlineSessionData;
 
 trait HasOnlineSessions
 {
-    public function onlineSessions(): ?OnlineSessionData
+    public function onlineSession(): ?OnlineSessionData
     {
         return app(ShopifySessionsRepositoryInterface::class)
             ->onlineSessionFor(
