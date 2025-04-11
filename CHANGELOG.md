@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.1 - 2025-04-11
+
+Reworked startSessionManually. changed some interfaces
+
 ## 1.0.8 - 2025-02-25
 
 octane compatibility
