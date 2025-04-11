@@ -205,14 +205,33 @@ class Zaar
         return true;
     }
 
+    public static function endSession()
+    {
+        app()->forget(OnlineSessionData::class);
+        app()->forget(OfflineSessionData::class);
+        app()->forget(EmbeddedAuthData::class);
+    }
+
     /**
      * @throws ShopifyNotFoundException
      */
     public static function startSessionManually(
-        ProvidesOfflineSession|string $shopifyOrDomain,
+        ProvidesOfflineSession|string|null $shopifyOrDomain,
         ?ProvidesOnlineSessions $user = null
     ): bool {
+        if (! $shopifyOrDomain) {
+            // undo all sessions
+            self::endSession();
+
+            return true;
+        }
+
         if (is_string($shopifyOrDomain)) {
+            // check against current session to see if we can avoid a db query
+            if (self::session()?->shop === $shopifyOrDomain) {
+                return true;
+            }
+
             $domain = $shopifyOrDomain;
             $shopifyOrDomain = app(ShopifyRepositoryInterface::class)->find(
                 $shopifyOrDomain
@@ -231,14 +250,33 @@ class Zaar
             'Shopify model must implement ProvidesOfflineSessions'
         );
 
+        // early return if we have a session for this shop
+
+        if (self::session()) {
+            if (self::session()->shop === $shopifyOrDomain->{config('zaar.repositories.shopify.shop_domain_column')}) {
+                return true;
+            } else {
+                self::endSession();
+            }
+        }
+
         $session = $shopifyOrDomain->offlineSession();
         if (! $session) {
             return false;
         }
 
-        $sessionData = SessionData::merge(null, $session);
+        $onlineSessionData = null;
+        if ($user) {
+            $onlineSessionData = $user->onlineSession();
+        }
+
+        $sessionData = SessionData::merge($onlineSessionData, $session);
 
         app()->instance(OfflineSessionData::class, $session);
+        app()->instance(SessionData::class, $sessionData);
+        if ($onlineSessionData) {
+            app()->instance(OnlineSessionData::class, $onlineSessionData);
+        }
 
         event(new OfflineSessionLoaded($session));
         event(new ShopifyTenantLoaded($shopifyOrDomain));

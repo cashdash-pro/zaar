@@ -8,7 +8,7 @@ use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Contracts\UserRepositoryInterface;
 use CashDash\Zaar\Http\Middleware\RemoveCookiesMiddleware;
-use CashDash\Zaar\Sessions\ShopifyRedisSessionHandler;
+use CashDash\Zaar\Sessions\ShopifyCacheSessionHandler;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Auth\Factory;
@@ -68,7 +68,7 @@ class ZaarServiceProvider extends PackageServiceProvider
             $cache = $app->make('cache')->store(config('cache.default'));
             $ttl = config('session.lifetime');
 
-            return new ShopifyRedisSessionHandler($cache, $ttl);
+            return new ShopifyCacheSessionHandler($cache, $ttl);
         });
 
         if (Zaar::isEmbedded()) {

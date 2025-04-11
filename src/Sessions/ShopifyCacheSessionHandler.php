@@ -7,7 +7,7 @@ use CashDash\Zaar\Actions\TokenExchangeAuth\GetTokenFromRequest;
 use CashDash\Zaar\Dtos\SessionToken;
 use Illuminate\Session\CacheBasedSessionHandler;
 
-class ShopifyRedisSessionHandler extends CacheBasedSessionHandler
+class ShopifyCacheSessionHandler extends CacheBasedSessionHandler
 {
     public ?SessionToken $sessionToken = null;
 
