@@ -154,6 +154,7 @@ class EmbeddedStrategy implements AuthFlow
             $shopify = $shopifyCallback();
             if ($shopify instanceof \Illuminate\Database\Eloquent\Model && $shopify->{config('zaar.repositories.shopify.shop_domain_column')} === $this->domain) {
                 $this->shopify = $shopify;
+
                 return $this;
             }
         }
