@@ -15,6 +15,7 @@ use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Dtos\SessionData;
 use CashDash\Zaar\Exceptions\ShopifySessionNotStartedException;
+use CashDash\Zaar\Zaar;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Traits\Conditionable;
@@ -145,6 +146,14 @@ class EmbeddedStrategy implements AuthFlow
             if ($this->domain === $shopify->{config('zaar.repositories.shopify.shop_domain_column')}) {
                 $this->shopify = $shopify;
 
+                return $this;
+            }
+        }
+
+        if ($shopifyCallback = Zaar::$shopifyTenant) {
+            $shopify = $shopifyCallback();
+            if ($shopify instanceof \Illuminate\Database\Eloquent\Model && $shopify->{config('zaar.repositories.shopify.shop_domain_column')} === $this->domain) {
+                $this->shopify = $shopify;
                 return $this;
             }
         }

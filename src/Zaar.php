@@ -44,6 +44,11 @@ class Zaar
     public static $createShopifyCallback = null;
 
     /**
+     * @var null|callable
+     */
+    public static $shopifyTenant = null;
+
+    /**
      * Supply a callback that takes an OnlineSessionData object and returns a user object.
      */
     public static function createUserUsing(callable $callback): void
@@ -80,6 +85,12 @@ class Zaar
         // you'll also get given the user if you want to do store impersonation (aka check they can access first)
 
         self::$resolveExternalRequest = $callback;
+    }
+
+    public static function setShopifyTenant(callable $callback): void
+    {
+        // If the callback returns a model that matches the shopify domain, we'll use that model as the shopify tenant
+        self::$shopifyTenant = $callback;
     }
 
     public static function sessionType(): SessionType
@@ -277,6 +288,7 @@ class Zaar
         if ($onlineSessionData) {
             app()->instance(OnlineSessionData::class, $onlineSessionData);
         }
+        app()->instance('zaar.shopify', $shopifyOrDomain);
 
         event(new OfflineSessionLoaded($session));
         event(new ShopifyTenantLoaded($shopifyOrDomain));
