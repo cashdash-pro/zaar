@@ -7,6 +7,7 @@ use CashDash\Zaar\Contracts\ProvidesOnlineSessions;
 use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Contracts\UserRepositoryInterface;
+use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\SessionData;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class ExternalStrategy implements AuthFlow
         }
 
         $this->user = $user;
-        $this->onlineSession = $user->onlineSessions();
+        $this->onlineSession = $user->onlineSession();
 
         if (! $this->onlineSession) {
             // potentially redirect if there's no online session
@@ -49,8 +50,13 @@ class ExternalStrategy implements AuthFlow
         return $this;
     }
 
-    public function withUser(): AuthFlow
+    public function withUser(?Authenticatable $user): AuthFlow
     {
+        if ($user) {
+            $this->user = $user;
+            return $this;
+        }
+
         return $this;
     }
 
@@ -75,6 +81,14 @@ class ExternalStrategy implements AuthFlow
         if (! $this->domain) {
             return $this;
         }
+
+        if ($offlineSession = app(OfflineSessionData::class)) {
+            if ($offlineSession->shop === $this->domain) {
+                $this->offlineSession = $offlineSession;
+                return $this;
+            }
+        }
+
         $this->offlineSession = $this->sessionsRepository->findOffline($this->domain);
 
         return $this;
@@ -97,6 +111,13 @@ class ExternalStrategy implements AuthFlow
             return $this;
         }
 
+        if ($shopify = app('zaar.shopify')) {
+            if ($shopify->shop === $this->sessionData->shop) {
+                $this->shopify = $shopify;
+                return $this;
+            }
+        }
+
         $this->shopify = $this->shopifyRepository->find($this->sessionData->shop);
 
         return $this;
@@ -104,7 +125,6 @@ class ExternalStrategy implements AuthFlow
 
     public function getUser(): ?Authenticatable
     {
-        //        dd($this);
         return $this->user;
     }
 

@@ -10,7 +10,7 @@ interface AuthFlow
 
     public function withOnlineSession(?Authenticatable $user): self;
 
-    public function withUser(): self;
+    public function withUser(?Authenticatable $user): self;
 
     public function withDomain(): self;
 

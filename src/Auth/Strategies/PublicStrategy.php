@@ -35,7 +35,7 @@ class PublicStrategy implements AuthFlow
         return $this;
     }
 
-    public function withUser(): AuthFlow
+    public function withUser(?Authenticatable $user): AuthFlow
     {
         return $this;
     }

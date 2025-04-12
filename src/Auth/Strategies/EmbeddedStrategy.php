@@ -11,6 +11,8 @@ use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Contracts\UserRepositoryInterface;
 use CashDash\Zaar\Dtos\EmbeddedAuthData;
+use CashDash\Zaar\Dtos\OfflineSessionData;
+use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Dtos\SessionData;
 use CashDash\Zaar\Exceptions\ShopifySessionNotStartedException;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -37,10 +39,18 @@ class EmbeddedStrategy implements AuthFlow
         }
     }
 
+
     public function withOnlineSession(?Authenticatable $user): AuthFlow
     {
         if (! $this->auth) {
             return $this;
+        }
+
+        if ($onlineSession = app(OnlineSessionData::class)) {
+            if ($onlineSession->id === $this->auth->session_token->sid) {
+                $this->onlineSession = $onlineSession;
+                return $this;
+            }
         }
 
         $this->onlineSession = $this->sessionsRepository->findOnline($this->auth->session_token->sid);
@@ -51,8 +61,13 @@ class EmbeddedStrategy implements AuthFlow
         return $this;
     }
 
-    public function withUser(): AuthFlow
+    public function withUser(?Authenticatable $user): AuthFlow
     {
+        if ($user) {
+            $this->user = $user;
+            return $this;
+        }
+
         if (! $this->onlineSession) {
             return $this;
         }
@@ -86,6 +101,13 @@ class EmbeddedStrategy implements AuthFlow
             return $this;
         }
 
+        if ($offlineSession = app(OfflineSessionData::class)) {
+            if ($offlineSession->shop === $this->auth->session_token->dest) {
+                $this->offlineSession = $offlineSession;
+                return $this;
+            }
+         }
+
         $authOfflineSession = $this->sessionsRepository->findOffline($this->auth->session_token->dest);
         if (! $authOfflineSession) {
             $authOfflineSession = ShopifyOfflineSessionCreation::make()->handle($this->auth);
@@ -115,6 +137,13 @@ class EmbeddedStrategy implements AuthFlow
     {
         if (! $this->sessionData) {
             return $this;
+        }
+
+        if ($shopify = app('zaar.shopify')) {
+            if ($this->domain === $shopify->{config('zaar.repositories.shopify.shop_domain_column')}) {
+                $this->shopify = $shopify;
+                return $this;
+            }
         }
 
         $shopify = $this->shopifyRepository->find($this->domain);

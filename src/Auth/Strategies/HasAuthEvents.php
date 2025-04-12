@@ -31,7 +31,7 @@ trait HasAuthEvents
     {
         return $this
             ->withOnlineSession($user)
-            ->withUser()
+            ->withUser($user)
             ->withDomain()
             ->when(Zaar::sessionType() === SessionType::OFFLINE, fn (AuthFlow $auth) => $auth->withOfflineSession())
             ->mergeSessions()
@@ -46,6 +46,7 @@ trait HasAuthEvents
         app()->scoped(OnlineSessionData::class, fn () => $this->onlineSession);
         app()->scoped(OfflineSessionData::class, fn () => $this->offlineSession);
         app()->scoped(SessionData::class, fn () => $this->sessionData);
+        app()->scoped('zaar.shopify', fn () => $this->shopify);
 
         return $this;
     }
