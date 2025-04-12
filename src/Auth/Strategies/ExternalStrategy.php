@@ -54,6 +54,7 @@ class ExternalStrategy implements AuthFlow
     {
         if ($user) {
             $this->user = $user;
+
             return $this;
         }
 
@@ -85,6 +86,7 @@ class ExternalStrategy implements AuthFlow
         if ($offlineSession = app(OfflineSessionData::class)) {
             if ($offlineSession->shop === $this->domain) {
                 $this->offlineSession = $offlineSession;
+
                 return $this;
             }
         }
@@ -114,6 +116,7 @@ class ExternalStrategy implements AuthFlow
         if ($shopify = app('zaar.shopify')) {
             if ($shopify->shop === $this->sessionData->shop) {
                 $this->shopify = $shopify;
+
                 return $this;
             }
         }
