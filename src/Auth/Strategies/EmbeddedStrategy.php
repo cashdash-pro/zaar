@@ -45,7 +45,7 @@ class EmbeddedStrategy implements AuthFlow
             return $this;
         }
 
-        if ($onlineSession = app(OnlineSessionData::class)) {
+        if (app()->has(OnlineSessionData::class) && $onlineSession = app(OnlineSessionData::class)) {
             if ($onlineSession->id === $this->auth->session_token->sid) {
                 $this->onlineSession = $onlineSession;
 
@@ -102,7 +102,7 @@ class EmbeddedStrategy implements AuthFlow
             return $this;
         }
 
-        if ($offlineSession = app(OfflineSessionData::class)) {
+        if (app()->has(OfflineSessionData::class) && $offlineSession = app(OfflineSessionData::class)) {
             if ($offlineSession->shop === $this->auth->session_token->dest) {
                 $this->offlineSession = $offlineSession;
 
@@ -141,7 +141,7 @@ class EmbeddedStrategy implements AuthFlow
             return $this;
         }
 
-        if ($shopify = app('zaar.shopify')) {
+        if (app()->has('zaar.shopify') && $shopify = app('zaar.shopify')) {
             if ($this->domain === $shopify->{config('zaar.repositories.shopify.shop_domain_column')}) {
                 $this->shopify = $shopify;
 
