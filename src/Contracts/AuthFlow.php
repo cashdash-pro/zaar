@@ -24,6 +24,8 @@ interface AuthFlow
 
     public function bindData(): self;
 
+    public function storeSessions(): self;
+
     public function dispatchEvents(): self;
 
     public function getUser(): ?Authenticatable;

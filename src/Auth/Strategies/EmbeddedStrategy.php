@@ -6,6 +6,7 @@ use CashDash\Zaar\Actions\Creation\ShopifyCreation;
 use CashDash\Zaar\Actions\Creation\ShopifyOfflineSessionCreation;
 use CashDash\Zaar\Actions\Creation\ShopifyOnlineSessionCreation;
 use CashDash\Zaar\Actions\Creation\UserCreation;
+use CashDash\Zaar\Actions\TokenExchangeAuth\ExchangeForSessionData;
 use CashDash\Zaar\Contracts\AuthFlow;
 use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
@@ -56,6 +57,7 @@ class EmbeddedStrategy implements AuthFlow
 
         $this->onlineSession = $this->sessionsRepository->findOnline($this->auth->session_token->sid);
         if (! $this->onlineSession) {
+            $this->shouldStoreOnlineSession = true;
             $this->onlineSession = ShopifyOnlineSessionCreation::make()->handle($this->auth);
         }
 
@@ -114,6 +116,7 @@ class EmbeddedStrategy implements AuthFlow
         $authOfflineSession = $this->sessionsRepository->findOffline($this->auth->session_token->dest);
         if (! $authOfflineSession) {
             $authOfflineSession = ShopifyOfflineSessionCreation::make()->handle($this->auth);
+            $this->shouldStoreOfflineSession = true;
         }
 
         if ($this->domain === $this->auth->session_token->dest) {

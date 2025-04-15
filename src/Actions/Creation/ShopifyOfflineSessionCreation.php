@@ -14,18 +14,13 @@ class ShopifyOfflineSessionCreation
     use AsObject;
 
     public function __construct(
-        private ShopifySessionsRepositoryInterface $repository
     ) {}
 
     public function handle(EmbeddedAuthData $auth): OfflineSessionData
     {
         $sessionData = ExchangeForSessionData::make()->handleOffline($auth->bearer_token, $auth->session_token);
 
-        $this->repository->createOffline($sessionData);
-
         app()->instance(OfflineSessionData::class, $sessionData);
-
-        event(new ShopifyOfflineSessionCreated($sessionData));
 
         return $sessionData;
     }

@@ -3,12 +3,15 @@
 namespace CashDash\Zaar\Auth\Strategies;
 
 use CashDash\Zaar\Contracts\AuthFlow;
+use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
 use CashDash\Zaar\Dtos\SessionData;
 use CashDash\Zaar\Events\OfflineSessionLoaded;
 use CashDash\Zaar\Events\OnlineSessionLoaded;
 use CashDash\Zaar\Events\SessionAuthenticated;
+use CashDash\Zaar\Events\ShopifyOfflineSessionCreated;
+use CashDash\Zaar\Events\ShopifyOnlineSessionCreated;
 use CashDash\Zaar\Events\ShopifyTenantLoaded;
 use CashDash\Zaar\SessionType;
 use CashDash\Zaar\Zaar;
@@ -17,6 +20,9 @@ use Illuminate\Database\Eloquent\Model;
 
 trait HasAuthEvents
 {
+    private bool $shouldStoreOnlineSession = false;
+    private bool $shouldStoreOfflineSession = false;
+
     private ?OnlineSessionData $onlineSession = null;
 
     private ?OfflineSessionData $offlineSession = null;
@@ -37,6 +43,7 @@ trait HasAuthEvents
             ->mergeSessions()
             ->bindData()
             ->withShopifyModel()
+            ->storeSessions()
             ->dispatchEvents()
             ->getUser();
     }
@@ -47,6 +54,21 @@ trait HasAuthEvents
         app()->scoped(OfflineSessionData::class, fn () => $this->offlineSession);
         app()->scoped(SessionData::class, fn () => $this->sessionData);
         app()->scoped('zaar.shopify', fn () => $this->shopify);
+
+        return $this;
+    }
+
+    public function storeSessions(): AuthFlow
+    {
+        $repo = app(ShopifySessionsRepositoryInterface::class);
+        if ($this->shouldStoreOnlineSession) {
+            $repo->createOnline($this->onlineSession);
+            event(new ShopifyOnlineSessionCreated($this->onlineSession));
+        }
+        if ($this->shouldStoreOfflineSession) {
+            $repo->createOffline($this->offlineSession);
+            event(new ShopifyOfflineSessionCreated($this->offlineSession));
+        }
 
         return $this;
     }
