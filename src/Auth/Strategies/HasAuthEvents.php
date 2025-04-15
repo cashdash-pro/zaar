@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 trait HasAuthEvents
 {
     private bool $shouldStoreOnlineSession = false;
+
     private bool $shouldStoreOfflineSession = false;
 
     private ?OnlineSessionData $onlineSession = null;

@@ -6,7 +6,6 @@ use CashDash\Zaar\Actions\Creation\ShopifyCreation;
 use CashDash\Zaar\Actions\Creation\ShopifyOfflineSessionCreation;
 use CashDash\Zaar\Actions\Creation\ShopifyOnlineSessionCreation;
 use CashDash\Zaar\Actions\Creation\UserCreation;
-use CashDash\Zaar\Actions\TokenExchangeAuth\ExchangeForSessionData;
 use CashDash\Zaar\Contracts\AuthFlow;
 use CashDash\Zaar\Contracts\ShopifyRepositoryInterface;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
@@ -157,6 +156,7 @@ class EmbeddedStrategy implements AuthFlow
             $shopify = $shopifyCallback();
             if ($shopify instanceof \Illuminate\Database\Eloquent\Model && $shopify->{config('zaar.repositories.shopify.shop_domain_column')} === $this->domain) {
                 $this->shopify = $shopify;
+
                 return $this;
             }
         }

@@ -4,10 +4,8 @@ namespace CashDash\Zaar\Actions\Creation;
 
 use CashDash\Zaar\Actions\TokenExchangeAuth\ExchangeForSessionData;
 use CashDash\Zaar\Concerns\Actions\AsObject;
-use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Dtos\EmbeddedAuthData;
 use CashDash\Zaar\Dtos\OfflineSessionData;
-use CashDash\Zaar\Events\ShopifyOfflineSessionCreated;
 
 class ShopifyOfflineSessionCreation
 {
