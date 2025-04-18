@@ -61,6 +61,10 @@ trait HasAuthEvents
 
     public function storeSessions(): AuthFlow
     {
+        if ($this->shopify) {
+            event(new ShopifyTenantLoaded($this->shopify));
+        }
+
         $repo = app(ShopifySessionsRepositoryInterface::class);
         if ($this->shouldStoreOnlineSession) {
             $repo->createOnline($this->onlineSession);
@@ -91,9 +95,6 @@ trait HasAuthEvents
         }
         if ($this->offlineSession) {
             event(new OfflineSessionLoaded($this->offlineSession));
-        }
-        if ($this->shopify) {
-            event(new ShopifyTenantLoaded($this->shopify));
         }
         if ($this->sessionData && $this->shopify) {
             event(new SessionAuthenticated($this->sessionData, $this->shopify, $this->user));
