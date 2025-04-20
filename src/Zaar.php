@@ -219,13 +219,13 @@ class Zaar
     public static function endSession()
     {
         if (app()->has(OnlineSessionData::class)) {
-            app()->forget(OnlineSessionData::class);
+            app()->forgetInstance(OnlineSessionData::class);
         }
         if (app()->has(OfflineSessionData::class)) {
-            app()->forget(OfflineSessionData::class);
+            app()->forgetInstance(OfflineSessionData::class);
         }
         if (app()->has(EmbeddedAuthData::class)) {
-            app()->forget(EmbeddedAuthData::class);
+            app()->forgetInstance(EmbeddedAuthData::class);
         }
     }
 
