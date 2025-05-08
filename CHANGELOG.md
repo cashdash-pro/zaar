@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.2.3 - 2025-05-08
+
+**Full Changelog**: https://github.com/cashdash-pro/zaar/compare/1.2.2...1.2.3
+
 ## 1.2.2 - 2025-04-20
 
 **Full Changelog**: https://github.com/cashdash-pro/zaar/compare/1.2.1...1.2.2
