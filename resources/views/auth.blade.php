@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta name="shopify-api-key" content="{{config('zaar.shopify_app.client_id')}}"/>
-        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-	</head>
-    <body class="font-sans antialiased">
+
+<head>
+    <meta name="shopify-api-key" content="{{config('zaar.shopify_app.client_id')}}" />
+    <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
+</head>
+
+<body class="font-sans antialiased">
     <script>
         // Shopify's redirect is broken atm on firefox
         const handleRedirect = async () => {
@@ -15,10 +17,10 @@
                 // add the token to the redirect URL
                 if (redirectUrl) {
 
-                    @if(!app()->isProduction())
-                    shopify.toast.show('A hard navigation was recovered, ensure this is expected (this message is only shown in dev mode)', {
-                        isError: true
-                    })
+                    @if(app()->isLocal())
+                        shopify.toast.show('A hard navigation was recovered, ensure this is expected (this message is only shown in dev mode)', {
+                            isError: true
+                        })
                     @endif
 
                     const url = new URL(redirectUrl);
@@ -34,5 +36,6 @@
 
         document.addEventListener('DOMContentLoaded', handleRedirect);
     </script>
-    </body>
+</body>
+
 </html>
