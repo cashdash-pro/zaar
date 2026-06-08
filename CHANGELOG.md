@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.2.6 - 2026-06-08
+
+Follow-up compatibility release for the Laravel 13 support line.
+
+- Raise the Testbench 9 dev dependency floor to avoid the broken Laravel 11/Pest 2 prefer-lowest combination.
+- Update the test matrix to exercise Testbench 9.13+ for Laravel 11 and Testbench 8.22+ for Laravel 10.
+- Verified local package checks plus clean Laravel 10 and Laravel 11 prefer-lowest installs.
+
 ## 1.2.5 - 2026-06-08
 
 Follow-up Laravel compatibility release.
