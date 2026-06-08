@@ -9,15 +9,17 @@ use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Contracts\UserRepositoryInterface;
 use CashDash\Zaar\Http\Middleware\RemoveCookiesMiddleware;
 use CashDash\Zaar\Sessions\ShopifyCacheSessionHandler;
+use Illuminate\Auth\AuthManager;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Shopify\Provider;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -137,26 +139,13 @@ class ZaarServiceProvider extends PackageServiceProvider
             return;
         }
 
-        $this->app->resolving(VerifyCsrfToken::class, function ($middleware) use ($routes) {
+        $csrfMiddleware = class_exists(PreventRequestForgery::class)
+            ? PreventRequestForgery::class
+            : 'Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken';
+
+        $this->app->resolving($csrfMiddleware, function ($middleware) use ($routes) {
             $middleware->except($routes);
         });
-    }
-
-    /**
-     * Register the guard.
-     *
-     * @param  Factory  $auth
-     * @param  array  $config
-     */
-    protected function createGuard($auth, $config): RequestGuard
-    {
-        $guard = new Guard($auth, $config['provider']);
-
-        return new RequestGuard(
-            $guard,
-            request(),
-            $auth->createUserProvider($config['provider'] ?? null)
-        );
     }
 
     /**
@@ -164,12 +153,20 @@ class ZaarServiceProvider extends PackageServiceProvider
      */
     protected function configureGuard(): void
     {
-        Auth::resolved(function ($auth) {
-            $auth->extend('shopify', function ($app, $name, array $config) use ($auth) {
-                return tap($this->createGuard($auth, $config), function ($guard) {
-                    app()->refresh('request', $guard, 'setRequest');
-                });
-            });
+        Auth::extend('shopify', static function (Application $app, string $name, array $config): RequestGuard {
+            /** @var AuthManager $auth */
+            $auth = $app->make('auth');
+            $provider = $config['provider'] ?? null;
+
+            $guard = new RequestGuard(
+                new Guard($auth, $provider),
+                $app->make('request'),
+                $auth->createUserProvider($provider)
+            );
+
+            $app->refresh('request', $guard, 'setRequest');
+
+            return $guard;
         });
     }
 
@@ -256,8 +253,8 @@ CODE;
 
     private function registerSocialite()
     {
-        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            $event->extendSocialite('shopify', \SocialiteProviders\Shopify\Provider::class);
+        Event::listen(function (SocialiteWasCalled $event) {
+            $event->extendSocialite('shopify', Provider::class);
         });
     }
 }

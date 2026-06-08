@@ -1,6 +1,7 @@
 <?php
 
 use CashDash\Zaar\Tests\TestCase;
+use Firebase\JWT\JWT;
 use Workbench\App\Models\User;
 
 uses(TestCase::class)->in(__DIR__)
@@ -8,7 +9,8 @@ uses(TestCase::class)->in(__DIR__)
         Config::set([
             'zaar.user.model' => User::class,
             'zaar.user.shopify_user_id_column' => 'shopify_user_id',
-            'zaar.shopify_app.client_secret' => 'test-secret',
+            'zaar.repositories.user.model' => User::class,
+            'zaar.shopify_app.client_secret' => 'test-secret-test-secret-test-secret-32',
             'zaar.user.auto_create' => false,
         ]);
     });
@@ -18,7 +20,7 @@ function createJwtToken(
     int $exp = 3600,
     string $sid = 'session_456'
 ): string {
-    return \Firebase\JWT\JWT::encode([
+    return JWT::encode([
         'iss' => 'shop123.myshopify.com/admin',
         'dest' => 'shop123.myshopify.com',
         'aud' => 8273642,
