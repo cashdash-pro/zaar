@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.2.5 - 2026-06-08
+
+Follow-up Laravel compatibility release.
+
+- Include the user migration stub used by the package test harness.
+- Keep Pest tests compatible with Pest 2 through 4.
+- Allow Laravel 10 CI dependency resolution by permitting Pest 2 dev tooling.
+- Guard Laravel's Authenticate::redirectUsing hook for framework versions that support it.
+- Commit full Pint formatting expected by CI.
+
 ## 1.2.4 - 2026-06-08
 
 Laravel 13 compatibility release.
