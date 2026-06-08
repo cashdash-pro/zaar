@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.2.4 - 2026-06-08
+
+Laravel 13 compatibility release.
+
+- Allow Laravel 13, Testbench 11, Pest 4, Larastan 3, and firebase/php-jwt 7 constraints.
+- Register the Shopify auth guard directly through Laravel's auth manager.
+- Support Laravel's renamed CSRF middleware while retaining older Laravel compatibility.
+- Update auth tests for the current guard and repository behavior.
+
 ## 1.2.3 - 2025-05-08
 
 **Full Changelog**: https://github.com/cashdash-pro/zaar/compare/1.2.2...1.2.3
