@@ -11,12 +11,12 @@ use Workbench\Database\Factories\UserFactory;
 
 class User extends Authenticatable implements ProvidesOnlineSessions
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     use HasOnlineSessions;
 
-    protected static function newFactory()
+    protected static function newFactory(): UserFactory
     {
         return UserFactory::new();
     }

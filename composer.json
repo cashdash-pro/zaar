@@ -51,6 +51,7 @@
         "psr-4": {
             "CashDash\\Zaar\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\": "workbench/database/"
         }
     },
