@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-shopify` will be documented in this file.
 
+## 1.2.7 - 2026-06-08
+
+Follow-up compatibility release for the Laravel 13 support line.
+
+- Add an explicit Workbench factory PSR-4 mapping so tests pass on case-sensitive Linux runners.
+- Keep the Testbench floor fixes from 1.2.6 for Laravel 10 and Laravel 11 CI.
+- Verified Composer validation, Pint, and the package Pest suite locally.
+
 ## 1.2.6 - 2026-06-08
 
 Follow-up compatibility release for the Laravel 13 support line.
