@@ -5,11 +5,12 @@ namespace CashDash\Zaar\Repositories;
 use CashDash\Zaar\Contracts\ShopifySessionsRepositoryInterface;
 use CashDash\Zaar\Dtos\OfflineSessionData;
 use CashDash\Zaar\Dtos\OnlineSessionData;
+use Illuminate\Database\Eloquent\Model;
 
 class ShopifySessionRepository implements ShopifySessionsRepositoryInterface
 {
     /**
-     * @return class-string<\Illuminate\Database\Eloquent\Model>
+     * @return class-string<Model>
      */
     private function model(): string
     {

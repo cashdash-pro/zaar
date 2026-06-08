@@ -10,6 +10,7 @@ use CashDash\Zaar\Dtos\PublicSessionToken;
 use CashDash\Zaar\Dtos\SessionData;
 use CashDash\Zaar\Zaar;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Traits\Conditionable;
 use Webmozart\Assert\Assert;
@@ -76,7 +77,7 @@ class PublicStrategy implements AuthFlow
 
         if ($shopifyCallback = Zaar::$shopifyTenant) {
             $shopify = $shopifyCallback();
-            if ($shopify instanceof \Illuminate\Database\Eloquent\Model && $shopify->{config('zaar.repositories.shopify.shop_domain_column')} === $this->sessionData->shop) {
+            if ($shopify instanceof Model && $shopify->{config('zaar.repositories.shopify.shop_domain_column')} === $this->sessionData->shop) {
                 $this->shopify = $shopify;
 
                 return $this;

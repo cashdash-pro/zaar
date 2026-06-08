@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
     /**
-     * @return class-string<\Illuminate\Database\Eloquent\Model>
+     * @return class-string<Model>
      */
     private function model(): string
     {

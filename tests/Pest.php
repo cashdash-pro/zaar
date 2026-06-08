@@ -2,9 +2,10 @@
 
 use CashDash\Zaar\Tests\TestCase;
 use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Config;
 use Workbench\App\Models\User;
 
-uses(TestCase::class)->in(__DIR__)
+uses(TestCase::class)
     ->beforeEach(function () {
         Config::set([
             'zaar.user.model' => User::class,
@@ -13,7 +14,8 @@ uses(TestCase::class)->in(__DIR__)
             'zaar.shopify_app.client_secret' => 'test-secret-test-secret-test-secret-32',
             'zaar.user.auto_create' => false,
         ]);
-    });
+    })
+    ->in(__DIR__);
 
 function createJwtToken(
     string $sub = '12345',

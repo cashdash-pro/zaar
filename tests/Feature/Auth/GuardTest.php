@@ -17,13 +17,13 @@ test('shopify guard resolves through the auth manager', function () {
 });
 
 test('guard returns the user resolved by configured guards', function () {
-    $auth = mock(Factory::class);
+    $auth = Mockery::mock(Factory::class);
     $request = Request::create('/test', 'GET');
     $request->setLaravelSession(app('session.store'));
 
     app()->instance('request', $request);
 
-    $webGuard = mock(GuardContract::class);
+    $webGuard = Mockery::mock(GuardContract::class);
     $user = new User;
 
     $auth->shouldReceive('guard')
@@ -41,13 +41,13 @@ test('guard returns the user resolved by configured guards', function () {
 });
 
 test('guard returns null without an authenticated user', function () {
-    $auth = mock(Factory::class);
+    $auth = Mockery::mock(Factory::class);
     $request = Request::create('/test', 'GET');
     $request->setLaravelSession(app('session.store'));
 
     app()->instance('request', $request);
 
-    $webGuard = mock(GuardContract::class);
+    $webGuard = Mockery::mock(GuardContract::class);
 
     $auth->shouldReceive('guard')
         ->with('web')

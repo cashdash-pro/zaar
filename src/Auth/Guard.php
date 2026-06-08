@@ -72,6 +72,10 @@ class Guard
         $user = $auth->run($user);
 
         if (! $user) {
+            if (! method_exists(Authenticate::class, 'redirectUsing')) {
+                return null;
+            }
+
             // we can fix this
             if (Zaar::isEmbedded()) {
                 Authenticate::redirectUsing(function () {

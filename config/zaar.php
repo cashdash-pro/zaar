@@ -1,5 +1,19 @@
 <?php
 
+use App\Models\User;
+use CashDash\Zaar\Http\Middleware\AddEmbeddedCspHeaderMiddleware;
+use CashDash\Zaar\Http\Middleware\AddParamsToRedirectMiddleware;
+use CashDash\Zaar\Http\Middleware\AuthenticateExtensionRequestMiddleware;
+use CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware;
+use CashDash\Zaar\Http\Middleware\FixReferrerMiddleware;
+use CashDash\Zaar\Http\Middleware\ReauthenticateEmbeddedRequestsMiddleware;
+use CashDash\Zaar\Models\Shopify;
+use CashDash\Zaar\Models\ShopifySession;
+use CashDash\Zaar\Repositories\ShopifyRepository;
+use CashDash\Zaar\Repositories\ShopifySessionRepository;
+use CashDash\Zaar\Repositories\UserRepository;
+use CashDash\Zaar\SessionType;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +36,7 @@ return [
         'redirect' => env('SHOPIFY_REDIRECT_URI'),
 
         'api_version' => env('SHOPIFY_API_VERSION', '2024-10'),
-        'session_type' => env('SHOPIFY_SESSION_TYPE', \CashDash\Zaar\SessionType::OFFLINE),
+        'session_type' => env('SHOPIFY_SESSION_TYPE', SessionType::OFFLINE),
     ],
 
     /*
@@ -101,20 +115,20 @@ return [
     'middleware' => [
         'shopify' => [
             'auth:shopify',
-            \CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware::class,
+            EnsureSessionStartedMiddleware::class,
         ],
         'shopify:web' => [
-            \CashDash\Zaar\Http\Middleware\FixReferrerMiddleware::class,
-            \CashDash\Zaar\Http\Middleware\AddParamsToRedirectMiddleware::class,
-            \CashDash\Zaar\Http\Middleware\AddEmbeddedCspHeaderMiddleware::class,
-            \CashDash\Zaar\Http\Middleware\ReauthenticateEmbeddedRequestsMiddleware::class,
+            FixReferrerMiddleware::class,
+            AddParamsToRedirectMiddleware::class,
+            AddEmbeddedCspHeaderMiddleware::class,
+            ReauthenticateEmbeddedRequestsMiddleware::class,
             'web',
             'auth:shopify',
-            \CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware::class,
+            EnsureSessionStartedMiddleware::class,
         ],
         'shopify:public' => [
-            \CashDash\Zaar\Http\Middleware\AuthenticateExtensionRequestMiddleware::class,
-            \CashDash\Zaar\Http\Middleware\EnsureSessionStartedMiddleware::class,
+            AuthenticateExtensionRequestMiddleware::class,
+            EnsureSessionStartedMiddleware::class,
         ],
     ],
 
@@ -133,21 +147,21 @@ return [
     */
     'repositories' => [
         'user' => [
-            'type' => CashDash\Zaar\Repositories\UserRepository::class,
-            'model' => \App\Models\User::class,
+            'type' => UserRepository::class,
+            'model' => User::class,
             'email_column' => 'email',
         ],
 
         'shopify' => [
-            'type' => \CashDash\Zaar\Repositories\ShopifyRepository::class,
-            'model' => \CashDash\Zaar\Models\Shopify::class,
+            'type' => ShopifyRepository::class,
+            'model' => Shopify::class,
             'shop_domain_column' => 'domain',
         ],
 
         'sessions' => [
             'database' => [
-                'type' => \CashDash\Zaar\Repositories\ShopifySessionRepository::class,
-                'model' => \CashDash\Zaar\Models\ShopifySession::class,
+                'type' => ShopifySessionRepository::class,
+                'model' => ShopifySession::class,
             ],
         ],
     ],
